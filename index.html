@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>SMC Academy Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Bebas+Neue&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07080f;--s1:#0d0e1a;--s2:#121325;--s3:#181930;
+  --border:#1e2040;--border2:#262850;
+  --bull:#26a69a;--bear:#ef5350;
+  --purple:#8b5cf6;--purple2:#a78bfa;--purple3:#7c3aed;
+  --purple-glow:rgba(139,92,246,.15);
+  --ob:#5b9fff;--fvg:#8b5cf6;--liq:#fbbf24;--bos:#8b5cf6;--choch:#fb923c;
+  --text:#e8edf8;--muted:#3d4060;--muted2:#6b72a0;
+  --accent:#8b5cf6;--accent2:#a78bfa;--accent3:#6d28d9;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;min-height:100%;background:var(--bg);color:var(--text);font-family:'Manrope',sans-serif;overflow-x:hidden;}
+
+/* ── SCREENS ── */
+.screen{display:none;min-height:100vh;animation:fadeUp .3s ease both;}
+.screen.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── TITLE ── */
+#s-title{
+  background:var(--bg);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;min-height:100vh;
+  padding:40px 24px;text-align:center;position:relative;overflow:hidden;
+}
+.title-bg-grid{
+  position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(139,92,246,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(139,92,246,.04) 1px,transparent 1px);
+  background-size:32px 32px;
+}
+.title-glow{position:absolute;top:-100px;left:50%;transform:translateX(-50%);
+  width:400px;height:400px;border-radius:50%;
+  background:radial-gradient(circle,rgba(139,92,246,.12) 0%,transparent 65%);pointer-events:none;}
+.title-glow2{position:absolute;bottom:-80px;right:-60px;width:280px;height:280px;border-radius:50%;
+  background:radial-gradient(circle,rgba(109,40,217,.08) 0%,transparent 65%);pointer-events:none;}
+
+.title-badge{display:inline-flex;align-items:center;gap:7px;
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--purple2);border:1px solid rgba(139,92,246,.3);border-radius:100px;
+  padding:6px 16px;margin-bottom:24px;}
+.title-badge span{width:6px;height:6px;border-radius:50%;background:var(--purple2);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
+
+.title-main{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,18vw,92px);
+  letter-spacing:3px;line-height:.88;margin-bottom:4px;}
+.title-main span{color:var(--purple2);}
+.title-sub{font-family:'Bebas Neue',sans-serif;font-size:clamp(18px,5vw,26px);
+  color:var(--muted2);letter-spacing:5px;margin-bottom:24px;}
+.title-desc{font-size:13px;color:var(--muted2);line-height:1.75;max-width:300px;margin:0 auto 36px;}
+
+.title-stats{display:flex;gap:28px;justify-content:center;margin-bottom:40px;flex-wrap:wrap;}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:34px;color:var(--purple2);line-height:1;}
+.stat-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted2);letter-spacing:2px;text-transform:uppercase;margin-top:2px;}
+
+.btn-start{
+  background:linear-gradient(135deg,var(--purple3),var(--purple));color:#fff;
+  font-family:'Manrope',sans-serif;font-weight:800;font-size:15px;
+  border:none;border-radius:14px;padding:16px 0;cursor:pointer;
+  width:100%;max-width:300px;letter-spacing:.3px;
+  box-shadow:0 0 32px rgba(139,92,246,.35);transition:all .2s;
+}
+.btn-start:active{transform:scale(.97);}
+
+.title-chips{display:flex;gap:7px;margin-top:28px;flex-wrap:wrap;justify-content:center;}
+.chip{font-family:'JetBrains Mono',monospace;font-size:9px;padding:4px 10px;
+  border-radius:6px;border:1px solid var(--border2);color:var(--muted2);}
+
+/* ── MENU ── */
+#s-menu{padding:0 0 80px;}
+.menu-header{padding:16px 16px 12px;border-bottom:1px solid var(--border);
+  position:sticky;top:0;background:rgba(7,8,15,.97);backdrop-filter:blur(14px);z-index:50;}
+.menu-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.menu-logo{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--purple2);letter-spacing:2px;}
+.prog-wrap{display:flex;align-items:center;gap:7px;}
+.prog-bar{width:72px;height:3px;background:var(--border2);border-radius:2px;overflow:hidden;}
+.prog-fill{height:100%;background:var(--purple);border-radius:2px;width:0%;transition:width .5s;}
+.prog-txt{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted2);}
+.search{display:flex;align-items:center;gap:8px;background:var(--s2);
+  border:1px solid var(--border);border-radius:10px;padding:9px 12px;}
+.search input{background:none;border:none;outline:none;color:var(--text);
+  font-family:'Manrope',sans-serif;font-size:13px;flex:1;}
+.search input::placeholder{color:var(--muted);}
+.menu-sec{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:3px;
+  text-transform:uppercase;color:var(--muted2);padding:18px 16px 8px;}
+
+/* Module card */
+.mcard{margin:0 12px 10px;background:var(--s1);border:1px solid var(--border);
+  border-radius:16px;overflow:hidden;cursor:pointer;transition:all .18s;position:relative;}
+.mcard:active{transform:scale(.985);border-color:var(--border2);}
+.mcard.done{border-color:rgba(139,92,246,.25);}
+.mc-top{padding:14px 14px 10px;display:flex;gap:12px;align-items:flex-start;}
+.mc-icon{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;
+  justify-content:center;font-size:19px;flex-shrink:0;}
+.mc-meta{flex:1;}
+.mc-num{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted2);letter-spacing:2px;text-transform:uppercase;margin-bottom:3px;}
+.mc-title{font-size:14px;font-weight:700;margin-bottom:2px;line-height:1.2;}
+.mc-desc{font-size:11px;color:var(--muted2);line-height:1.5;}
+.mc-badge{font-family:'JetBrains Mono',monospace;font-size:9px;padding:3px 8px;border-radius:100px;flex-shrink:0;white-space:nowrap;}
+.mc-bottom{padding:9px 14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:6px;}
+.mc-tags{display:flex;gap:5px;flex:1;flex-wrap:wrap;}
+.mc-tag{font-family:'JetBrains Mono',monospace;font-size:8px;padding:2px 7px;border-radius:4px;border:1px solid var(--border2);color:var(--muted2);}
+.mc-count{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);}
+
+/* ── LESSON ── */
+#s-lesson{padding:0 0 80px;}
+.lnav{display:flex;align-items:center;gap:10px;padding:12px 14px;
+  position:sticky;top:0;background:rgba(7,8,15,.97);backdrop-filter:blur(14px);z-index:50;border-bottom:1px solid var(--border);}
+.back{width:34px;height:34px;border-radius:9px;background:var(--s2);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;flex-shrink:0;}
+.back:active{background:var(--s3);}
+.lnav-title{font-size:13px;font-weight:700;flex:1;line-height:1.2;}
+.lnav-num{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted2);}
+.ltabs{display:flex;overflow-x:auto;padding:0 14px;border-bottom:1px solid var(--border);scrollbar-width:none;}
+.ltabs::-webkit-scrollbar{display:none;}
+.ltab{font-family:'JetBrains Mono',monospace;font-size:10px;padding:11px 13px;white-space:nowrap;
+  cursor:pointer;color:var(--muted2);border-bottom:2px solid transparent;transition:all .15s;}
+.ltab.active{color:var(--purple2);border-bottom-color:var(--purple);}
+.lpage{display:none;padding:16px 14px;}
+.lpage.active{display:block;animation:fadeUp .22s ease both;}
+
+/* ── CONTENT COMPONENTS ── */
+.l-hero{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px;position:relative;overflow:hidden;}
+.l-hero::before{content:'';position:absolute;top:-50px;right:-50px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,.08) 0%,transparent 70%);pointer-events:none;}
+.l-tag{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--purple2);margin-bottom:7px;}
+.l-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(26px,7vw,38px);letter-spacing:1px;line-height:1;margin-bottom:7px;}
+.l-title span{color:var(--purple2);}
+.l-text{font-size:12px;color:var(--muted2);line-height:1.7;}
+
+.ibox{border-radius:11px;padding:13px 14px;margin-bottom:11px;border-left:3px solid;}
+.ibox.purple{background:rgba(139,92,246,.07);border-color:var(--purple);}
+.ibox.blue{background:rgba(91,159,255,.07);border-color:#5b9fff;}
+.ibox.orange{background:rgba(251,146,60,.07);border-color:#fb923c;}
+.ibox.red{background:rgba(239,83,80,.07);border-color:var(--bear);}
+.ibox.teal{background:rgba(38,166,154,.07);border-color:var(--bull);}
+.ibox.yellow{background:rgba(251,191,36,.07);border-color:var(--liq);}
+.ibox.dark{background:var(--s2);border-color:var(--border2);}
+.ib-t{font-size:12px;font-weight:700;margin-bottom:3px;}
+.ib-d{font-size:11px;color:var(--muted2);line-height:1.65;}
+
+/* TradingView-style chart */
+.tv-chart{background:#131722;border:1px solid #2a2e39;border-radius:12px;overflow:hidden;margin-bottom:14px;position:relative;}
+.tv-topbar{background:#1e222d;padding:9px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #2a2e39;}
+.tv-pair{font-family:'JetBrains Mono',monospace;font-size:12px;color:#d1d4dc;font-weight:700;}
+.tv-tf{font-family:'JetBrains Mono',monospace;font-size:10px;color:#787b86;margin-left:6px;}
+.tv-ohlc{font-family:'JetBrains Mono',monospace;font-size:9px;color:#787b86;display:flex;gap:8px;}
+.tv-ohlc span{color:#d1d4dc;}
+.tv-legend{display:flex;gap:8px;flex-wrap:wrap;}
+.tv-leg{display:flex;align-items:center;gap:3px;font-family:'JetBrains Mono',monospace;font-size:8px;color:#787b86;}
+.tv-dot{width:6px;height:6px;border-radius:2px;}
+canvas.tv-canvas{display:block;width:100%;background:#131722;}
+.tv-watermark{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-family:'Bebas Neue',sans-serif;font-size:32px;color:rgba(255,255,255,.03);pointer-events:none;letter-spacing:2px;white-space:nowrap;}
+
+/* Interactive chart overlay */
+.tv-hover-info{position:absolute;top:44px;left:8px;
+  font-family:'JetBrains Mono',monospace;font-size:9px;color:#787b86;pointer-events:none;}
+
+.steps-list{display:flex;flex-direction:column;gap:9px;margin-bottom:14px;}
+.step-item{display:flex;gap:12px;background:var(--s1);border:1px solid var(--border);border-radius:13px;padding:13px;align-items:flex-start;}
+.step-n{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--border2);line-height:1;min-width:26px;}
+.step-item:active .step-n{color:var(--purple);}
+.step-t{font-size:12px;font-weight:700;margin-bottom:3px;}
+.step-d{font-size:11px;color:var(--muted2);line-height:1.6;}
+
+.data-table{width:100%;border-collapse:collapse;margin-bottom:14px;font-size:11px;border-radius:11px;overflow:hidden;border:1px solid var(--border);}
+.data-table th{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--muted2);padding:9px 11px;text-align:left;background:var(--s2);border-bottom:1px solid var(--border);}
+.data-table td{padding:10px 11px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.5;}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:nth-child(even) td{background:rgba(255,255,255,.012);}
+.p{color:var(--purple2);font-weight:600;}
+.g{color:var(--bull);font-weight:600;}
+.r{color:var(--bear);font-weight:600;}
+.y{color:var(--liq);font-weight:600;}
+.b{color:#5b9fff;font-weight:600;}
+
+.rule-list{display:flex;flex-direction:column;background:var(--s1);border:1px solid var(--border);border-radius:13px;overflow:hidden;margin-bottom:14px;}
+.rule-item{display:flex;align-items:flex-start;gap:9px;padding:11px 13px;border-bottom:1px solid var(--border);font-size:12px;line-height:1.5;}
+.rule-item:last-child{border-bottom:none;}
+.ri{flex-shrink:0;font-size:13px;margin-top:1px;}
+
+.cards2{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px;}
+.c2{background:var(--s1);border:1px solid var(--border);border-radius:13px;padding:13px;}
+.c2-i{font-size:18px;margin-bottom:7px;}
+.c2-t{font-size:12px;font-weight:700;margin-bottom:3px;}
+.c2-d{font-size:10px;color:var(--muted2);line-height:1.5;}
+.c2-b{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:8px;padding:2px 6px;border-radius:4px;margin-top:5px;}
+
+.highlight{background:rgba(139,92,246,.07);border:1px solid rgba(139,92,246,.2);border-radius:10px;padding:11px 13px;margin-bottom:11px;}
+.hl-t{font-size:11px;font-weight:700;color:var(--purple2);margin-bottom:3px;}
+.hl-d{font-size:11px;color:var(--muted2);line-height:1.65;}
+
+.formula{background:var(--s2);border:1px solid var(--border2);border-radius:10px;
+  padding:13px;font-family:'JetBrains Mono',monospace;font-size:11px;
+  color:var(--purple2);margin-bottom:11px;text-align:center;line-height:1.9;}
+
+.sec-div{padding:20px 0 8px;font-family:'JetBrains Mono',monospace;font-size:9px;
+  letter-spacing:3px;text-transform:uppercase;color:var(--muted);
+  border-bottom:1px solid var(--border);margin-bottom:13px;}
+
+.kz-grid{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:14px;}
+.kz-row{background:var(--s1);border:1px solid var(--border);border-radius:11px;padding:12px;display:flex;align-items:center;gap:12px;}
+.kz-time{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--purple2);min-width:90px;}
+.kz-info{}
+.kz-name{font-size:12px;font-weight:700;margin-bottom:2px;}
+.kz-desc{font-size:10px;color:var(--muted2);}
+.kz-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+
+/* Quiz */
+.quiz-box{background:var(--s1);border:1px solid var(--border);border-radius:13px;padding:14px;margin-bottom:12px;}
+.quiz-q{font-size:12px;font-weight:600;margin-bottom:10px;line-height:1.5;}
+.quiz-opts{display:flex;flex-direction:column;gap:7px;}
+.quiz-opt{background:var(--s2);border:1px solid var(--border2);border-radius:9px;padding:10px 13px;font-size:12px;cursor:pointer;transition:all .15s;text-align:left;color:var(--text);}
+.quiz-opt:active{background:var(--s3);}
+.quiz-opt.correct{background:rgba(38,166,154,.12);border-color:var(--bull);color:var(--bull);}
+.quiz-opt.wrong{background:rgba(239,83,80,.12);border-color:var(--bear);color:var(--bear);}
+
+/* ── FULL CHART SCREEN ── */
+#s-chart{padding:0;}
+#fcWrap{position:fixed;top:0;left:0;right:0;bottom:68px;overflow:hidden;background:#131722;}
+.fc-topbar{position:absolute;top:0;left:0;right:0;height:46px;
+  background:#1e222d;border-bottom:1px solid #2a2e39;
+  display:flex;align-items:center;gap:3px;padding:0 8px;z-index:10;overflow-x:auto;scrollbar-width:none;}
+.fc-topbar::-webkit-scrollbar{display:none;}
+.fc-btn{font-family:'JetBrains Mono',monospace;font-size:10px;padding:4px 9px;
+  border-radius:5px;border:1px solid transparent;cursor:pointer;
+  color:#787b86;background:transparent;transition:all .15s;white-space:nowrap;}
+.fc-btn:hover{color:#d1d4dc;}
+.fc-btn.active{background:#2a2e39;border-color:#363a45;color:var(--purple2);}
+.fc-sep{width:1px;height:18px;background:#2a2e39;flex-shrink:0;margin:0 3px;}
+.fc-canvas-wrap{position:absolute;top:46px;left:0;right:0;bottom:28px;cursor:crosshair;overflow:hidden;}
+#fcCanvas{display:block;width:100%;height:100%;background:#131722;}
+.fc-status{position:absolute;bottom:0;left:0;right:0;height:28px;
+  background:#1e222d;border-top:1px solid #2a2e39;
+  display:flex;align-items:center;padding:0 10px;gap:8px;z-index:10;
+  font-family:'JetBrains Mono',monospace;font-size:9px;color:#787b86;}
+#fcTT{position:absolute;background:#1e222d;border:1px solid #363a45;
+  border-radius:7px;padding:9px 11px;pointer-events:none;display:none;z-index:20;min-width:130px;}
+.tt-r{display:flex;justify-content:space-between;gap:12px;padding:1px 0;}
+.tt-l{font-family:'JetBrains Mono',monospace;color:#787b86;font-size:9px;}
+.tt-v{font-family:'JetBrains Mono',monospace;font-size:9px;color:#d1d4dc;}
+.fc-zoom{position:absolute;bottom:36px;right:9px;display:flex;flex-direction:column;gap:5px;z-index:10;}
+.fczb{width:29px;height:29px;background:#2a2e39;border:1px solid #363a45;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;color:#787b86;font-size:14px;}
+.fczb:active{color:var(--purple2);}
+
+/* ── GLOSSARY ── */
+#s-glossary{padding:0 0 80px;}
+.gloss-hdr{padding:18px 16px 12px;border-bottom:1px solid var(--border);}
+.gloss-title{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;}
+.gloss-title span{color:var(--purple2);}
+.gloss-hint{font-size:11px;color:var(--muted2);margin-top:3px;}
+.gi{padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer;}
+.gi-top{display:flex;align-items:center;justify-content:space-between;}
+.gi-term{font-size:13px;font-weight:700;}
+.gi-right{display:flex;align-items:center;gap:7px;}
+.gi-tag{font-family:'JetBrains Mono',monospace;font-size:8px;padding:2px 7px;border-radius:4px;}
+.gi-chev{color:var(--muted2);font-size:11px;transition:transform .18s;}
+.gi-chev.open{transform:rotate(180deg);}
+.gi-def{font-size:11px;color:var(--muted2);line-height:1.65;margin-top:8px;display:none;}
+.gi-def.open{display:block;animation:fadeUp .18s ease both;}
+
+/* ── BOTTOM NAV ── */
+.bnav{position:fixed;bottom:0;left:0;right:0;height:68px;
+  background:rgba(7,8,15,.98);border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-around;
+  z-index:100;backdrop-filter:blur(16px);padding:0 6px;}
+.bnav-btn{display:flex;flex-direction:column;align-items:center;gap:3px;
+  cursor:pointer;padding:8px 12px;border-radius:10px;transition:all .15s;flex:1;}
+.bnav-btn:active{background:var(--s2);}
+.bnav-icon{font-size:19px;color:var(--muted2);transition:color .15s;}
+.bnav-lbl{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--muted2);letter-spacing:1px;text-transform:uppercase;}
+.bnav-btn.active .bnav-icon,.bnav-btn.active .bnav-lbl{color:var(--purple2);}
+</style>
+</head>
+<body>
+
+<!-- ════ TITLE ════ -->
+<div id="s-title" class="screen active">
+  <div class="title-bg-grid"></div>
+  <div class="title-glow"></div>
+  <div class="title-glow2"></div>
+  <div class="title-badge"><span></span>Мобільна академія трейдингу</div>
+  <div class="title-main">SMC<br><span>ACADEMY</span></div>
+  <div class="title-sub">Pro Edition</div>
+  <p class="title-desc">Від механіки ринку до майстерності SMC. Без індикаторів. Тільки чистий графік і розуміння.</p>
+  <div class="title-stats">
+    <div class="stat"><div class="stat-num">11</div><div class="stat-lbl">Модулів</div></div>
+    <div class="stat"><div class="stat-num">60+</div><div class="stat-lbl">Уроків</div></div>
+    <div class="stat"><div class="stat-num">20+</div><div class="stat-lbl">Графіків</div></div>
+    <div class="stat"><div class="stat-num">6</div><div class="stat-lbl">Пар</div></div>
+  </div>
+  <button class="btn-start" onclick="goMenu()">Почати навчання →</button>
+  <div class="title-chips">
+    <div class="chip">Фундамент</div><div class="chip">SMC Core</div>
+    <div class="chip">Killzones</div><div class="chip">AMD Model</div>
+    <div class="chip">Order Flow</div><div class="chip">Психологія</div>
+  </div>
+</div>
+
+<!-- ════ MENU ════ -->
+<div id="s-menu" class="screen">
+  <div class="menu-header">
+    <div class="menu-top">
+      <div class="menu-logo">SMC ACADEMY</div>
+      <div class="prog-wrap">
+        <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+        <div class="prog-txt" id="progTxt">0%</div>
+      </div>
+    </div>
+    <div class="search">
+      <span style="color:var(--muted2);font-size:13px">🔍</span>
+      <input type="text" placeholder="Пошук модулів..." oninput="filterMods(this.value)" id="searchIn">
+    </div>
+  </div>
+  <div id="modList"></div>
+  <div style="height:20px;"></div>
+</div>
+
+<!-- ════ LESSON ════ -->
+<div id="s-lesson" class="screen">
+  <div class="lnav">
+    <div class="back" onclick="goBack()">←</div>
+    <div style="flex:1">
+      <div class="lnav-title" id="lessonTitle">—</div>
+      <div class="lnav-num" id="lessonNum">—</div>
+    </div>
+  </div>
+  <div class="ltabs" id="lessonTabs"></div>
+  <div id="lessonContent"></div>
+</div>
+
+<!-- ════ CHART ════ -->
+<div id="s-chart" class="screen">
+  <div id="fcWrap">
+    <div class="fc-topbar">
+      <button class="fc-btn active" onclick="fcPair('BTC/USDT',this)">BTC</button>
+      <button class="fc-btn" onclick="fcPair('ETH/USDT',this)">ETH</button>
+      <button class="fc-btn" onclick="fcPair('SOL/USDT',this)">SOL</button>
+      <button class="fc-btn" onclick="fcPair('BNB/USDT',this)">BNB</button>
+      <button class="fc-btn" onclick="fcPair('ARB/USDT',this)">ARB</button>
+      <button class="fc-btn" onclick="fcPair('AVAX/USDT',this)">AVAX</button>
+      <div class="fc-sep"></div>
+      <button class="fc-btn" onclick="fcTF('15m',this)">15m</button>
+      <button class="fc-btn" onclick="fcTF('1h',this)">1H</button>
+      <button class="fc-btn active" onclick="fcTF('4h',this)">4H</button>
+      <button class="fc-btn" onclick="fcTF('1d',this)">1D</button>
+      <button class="fc-btn" onclick="fcTF('1w',this)">1W</button>
+      <div class="fc-sep"></div>
+      <button class="fc-btn active" id="fob" onclick="fcLayer('ob',this)">OB</button>
+      <button class="fc-btn active" id="ffvg" onclick="fcLayer('fvg',this)">FVG</button>
+      <button class="fc-btn active" id="fliq" onclick="fcLayer('liq',this)">LIQ</button>
+      <button class="fc-btn active" id="fbos" onclick="fcLayer('bos',this)">BOS</button>
+    </div>
+    <div class="fc-canvas-wrap" id="fcWrapInner">
+      <canvas id="fcCanvas"></canvas>
+      <div class="tv-watermark">TRADINGVIEW STYLE</div>
+      <div id="fcTT">
+        <div class="tt-r"><span class="tt-l">O</span><span class="tt-v" id="tto">—</span></div>
+        <div class="tt-r"><span class="tt-l">H</span><span class="tt-v" id="tth">—</span></div>
+        <div class="tt-r"><span class="tt-l">L</span><span class="tt-v" id="ttl">—</span></div>
+        <div class="tt-r"><span class="tt-l">C</span><span class="tt-v" id="ttc">—</span></div>
+        <div class="tt-r"><span class="tt-l">Vol</span><span class="tt-v" id="ttv">—</span></div>
+      </div>
+      <div class="fc-zoom">
+        <div class="fczb" onclick="fcZoom(1.2)">+</div>
+        <div class="fczb" onclick="fcZoom(0.8)">−</div>
+        <div class="fczb" onclick="fcReset()">⌂</div>
+      </div>
+    </div>
+    <div class="fc-status">
+      <span id="fcStat">Потягни · Скрол для зуму</span>
+      <span style="margin-left:auto;font-size:8px" id="fcPTag">—</span>
+    </div>
+  </div>
+</div>
+
+<!-- ════ GLOSSARY ════ -->
+<div id="s-glossary" class="screen">
+  <div class="gloss-hdr">
+    <div class="gloss-title">SMC <span>Словник</span></div>
+    <div class="gloss-hint">Натисни на термін для визначення</div>
+  </div>
+  <div id="glossList"></div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bnav" id="bnav" style="display:none">
+  <div class="bnav-btn active" id="bn-menu" onclick="goMenu()"><span class="bnav-icon">📚</span><span class="bnav-lbl">Курс</span></div>
+  <div class="bnav-btn" id="bn-chart" onclick="goChart()"><span class="bnav-icon">📊</span><span class="bnav-lbl">Графік</span></div>
+  <div class="bnav-btn" id="bn-gloss" onclick="goGloss()"><span class="bnav-icon">📖</span><span class="bnav-lbl">Словник</span></div>
+</div>
+
+<script>
+// ═══════════ NAV ═══════════
+let cur='title', hist=[];
+function showS(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s-'+id).classList.add('active');
+  cur=id;
+  document.getElementById('bnav').style.display=id==='title'?'none':'flex';
+  ['menu','chart','gloss'].forEach(n=>document.getElementById('bn-'+n)?.classList.remove('active'));
+  if(id==='menu')document.getElementById('bn-menu')?.classList.add('active');
+  if(id==='chart')document.getElementById('bn-chart')?.classList.add('active');
+  if(id==='glossary')document.getElementById('bn-gloss')?.classList.add('active');
+  window.scrollTo(0,0);
+}
+function goMenu(){hist=[];showS('menu');renderMods();}
+function goChart(){hist.push(cur);showS('chart');initFC();}
+function goGloss(){hist.push(cur);showS('glossary');renderGloss();}
+function goBack(){const p=hist.pop()||'menu';showS(p);if(p==='menu')renderMods();}
+
+// ═══════════ MODULES ═══════════
+const MODS=[
+  // BEGINNER
+  {id:'market-mechanics',icon:'⚙️',col:'rgba(139,92,246,.1)',num:'B1',title:'Механіка ринку',desc:'Ордери Limit/Market, спред, біржова ліквідність',tags:['Limit','Market','Spread'],cnt:4,badge:'Фундамент',bc:'rgba(139,92,246,.15)',bt:'#a78bfa',sec:'🟣 Блок для новачків — Фундамент'},
+  {id:'risk-math',icon:'🧮',col:'rgba(239,83,80,.1)',num:'B2',title:'Математика ризику',desc:'Правило 1%, розрахунок розміру позиції, математика трейдингу',tags:['1%','Position','Math'],cnt:4,badge:'Критично',bc:'rgba(239,83,80,.15)',bt:'#ef5350',sec:null},
+  {id:'chart-anatomy',icon:'📈',col:'rgba(91,159,255,.1)',num:'B3',title:'Анатомія графіка',desc:'Свічки, TradingView, таймфрейми та механіка формування',tags:['Свічки','TradingView','ТФ'],cnt:3,badge:'Основа',bc:'rgba(91,159,255,.15)',bt:'#5b9fff',sec:null},
+  // SMC CORE
+  {id:'structure',icon:'📐',col:'rgba(139,92,246,.1)',num:'01',title:'Структура ринку',desc:'BOS, CHoCH, висхідний та низхідний тренд',tags:['BOS','CHoCH','HH/HL'],cnt:4,badge:'SMC Core',bc:'rgba(139,92,246,.15)',bt:'#a78bfa',sec:'🟣 SMC Core'},
+  {id:'ob',icon:'🟦',col:'rgba(91,159,255,.1)',num:'02',title:'Order Block',desc:'Зони накопичення інституційних ордерів',tags:['Bullish OB','Fresh','Confluence'],cnt:4,badge:'Ключове',bc:'rgba(91,159,255,.15)',bt:'#5b9fff',sec:null},
+  {id:'fvg',icon:'⚡',col:'rgba(139,92,246,.1)',num:'03',title:'Fair Value Gap',desc:'Імбаланси ринку та магніт для ціни',tags:['FVG','Imbalance','50%'],cnt:3,badge:'Важливо',bc:'rgba(139,92,246,.15)',bt:'#a78bfa',sec:null},
+  {id:'liquidity',icon:'💧',col:'rgba(251,191,36,.1)',num:'04',title:'Ліквідність',desc:'BSL, SSL, рівні хаїв/лоїв та ліквідні пастки',tags:['BSL','SSL','Sweep'],cnt:3,badge:'Критично',bc:'rgba(251,191,36,.15)',bt:'#fbbf24',sec:null},
+  {id:'entry',icon:'🎯',col:'rgba(139,92,246,.1)',num:'05',title:'Модель входу',desc:'Top-Down аналіз, три моделі входу, повний сетап',tags:['Top-Down','MSS','Wick'],cnt:4,badge:'Практика',bc:'rgba(139,92,246,.15)',bt:'#a78bfa',sec:null},
+  // ADVANCED
+  {id:'killzones',icon:'⏰',col:'rgba(251,146,60,.1)',num:'A1',title:'Time & Price / Killzones',desc:'Торгові сесії, вплив часу на доставку ціни, Killzones',tags:['London','NY','Asia'],cnt:4,badge:'Просунутий',bc:'rgba(251,146,60,.15)',bt:'#fb923c',sec:'🔴 Просунутий блок — Контекст та Майстерність'},
+  {id:'mtf',icon:'🔭',col:'rgba(91,159,255,.1)',num:'A2',title:'Мультитаймфреймовий аналіз',desc:'HTF→LTF логіка, переходи між таймфреймами',tags:['HTF','LTF','Context'],cnt:3,badge:'Просунутий',bc:'rgba(91,159,255,.15)',bt:'#5b9fff',sec:null},
+  {id:'amd',icon:'🌀',col:'rgba(139,92,246,.1)',num:'A3',title:'AMD & Power of 3',desc:'Маніпуляція, Accumulation, Distribution, алгоритм доставки',tags:['AMD','PO3','Algo'],cnt:4,badge:'Майстерність',bc:'rgba(139,92,246,.15)',bt:'#a78bfa',sec:null},
+  {id:'narrative',icon:'📜',col:'rgba(251,191,36,.1)',num:'A4',title:'Market Narrative',desc:'Order Flow, читання ринкової "історії", контекст HTF гравця',tags:['Order Flow','Narrative','Context'],cnt:3,badge:'Майстерність',bc:'rgba(251,191,36,.15)',bt:'#fbbf24',sec:null},
+  {id:'risk',icon:'🛡️',col:'rgba(239,83,80,.1)',num:'06',title:'Ризик та Журнал',desc:'SL/TP, RR 1:3, управління позицією, торговий журнал',tags:['RR','SL/TP','Журнал'],cnt:3,badge:'Обовʼязково',bc:'rgba(239,83,80,.15)',bt:'#ef5350',sec:'🟣 Практика'},
+  {id:'psychology',icon:'🧠',col:'rgba(251,146,60,.1)',num:'07',title:'Психологія',desc:'Дисципліна, FOMO, рутина, вечірній протокол',tags:['FOMO','Рутина','Журнал'],cnt:3,badge:'Фінал',bc:'rgba(251,146,60,.15)',bt:'#fb923c',sec:null},
+];
+
+let done=new Set();
+function renderMods(f=''){
+  const ml=document.getElementById('modList'); ml.innerHTML='';
+  let lastSec='';
+  MODS.filter(m=>!f||m.title.toLowerCase().includes(f.toLowerCase())||m.tags.some(t=>t.toLowerCase().includes(f.toLowerCase()))).forEach(m=>{
+    if(m.sec&&m.sec!==lastSec){
+      ml.innerHTML+=`<div class="menu-sec">${m.sec}</div>`;
+      lastSec=m.sec;
+    }
+    const ok=done.has(m.id);
+    ml.innerHTML+=`<div class="mcard ${ok?'done':''}" onclick="openLesson('${m.id}')">
+      <div class="mc-top">
+        <div class="mc-icon" style="background:${m.col}">${m.icon}</div>
+        <div class="mc-meta">
+          <div class="mc-num">Модуль ${m.num}</div>
+          <div class="mc-title">${m.title}</div>
+          <div class="mc-desc">${m.desc}</div>
+        </div>
+        <div class="mc-badge" style="background:${m.bc};color:${m.bt}">${ok?'✓':m.badge}</div>
+      </div>
+      <div class="mc-bottom">
+        <div class="mc-tags">${m.tags.map(t=>`<span class="mc-tag">${t}</span>`).join('')}</div>
+        <div class="mc-count">${m.cnt} уроки</div>
+      </div>
+    </div>`;
+  });
+  ml.innerHTML+='<div style="height:20px"></div>';
+  updProg();
+}
+function filterMods(v){renderMods(v);}
+function updProg(){const p=Math.round(done.size/MODS.length*100);document.getElementById('progFill').style.width=p+'%';document.getElementById('progTxt').textContent=p+'%';}
+
+// ═══════════ LESSON ═══════════
+function openLesson(id){
+  hist.push('menu');
+  const m=MODS.find(x=>x.id===id);
+  document.getElementById('lessonTitle').textContent=m.title;
+  document.getElementById('lessonNum').textContent=`Модуль ${m.num} · ${m.cnt} уроки`;
+  showS('lesson'); buildLesson(id); done.add(id); updProg();
+}
+function buildLesson(id){
+  const pages=PAGES[id]||[['Вступ','<p>Контент в розробці</p>']];
+  document.getElementById('lessonTabs').innerHTML=pages.map((p,i)=>`<div class="ltab ${i===0?'active':''}" onclick="switchTab(${i})">${p[0]}</div>`).join('');
+  document.getElementById('lessonContent').innerHTML=pages.map((p,i)=>`<div class="lpage ${i===0?'active':''}" id="lp-${i}">${p[1]}</div>`).join('');
+  setTimeout(()=>document.querySelectorAll('canvas[data-draw]').forEach(c=>window[c.dataset.draw]?.(c)),80);
+}
+function switchTab(i){
+  document.querySelectorAll('.ltab').forEach((t,ti)=>t.classList.toggle('active',ti===i));
+  document.querySelectorAll('.lpage').forEach((p,pi)=>p.classList.toggle('active',pi===i));
+  setTimeout(()=>document.querySelectorAll('canvas[data-draw]').forEach(c=>window[c.dataset.draw]?.(c)),60);
+}
+
+// ═══════════ CANVAS HELPERS ═══════════
+const DPR=window.devicePixelRatio||1;
+function setupC(c,h=200){
+  const w=c.parentElement.clientWidth;
+  c.width=w*DPR;c.height=h*DPR;c.style.width=w+'px';c.style.height=h+'px';
+  const ctx=c.getContext('2d');ctx.scale(DPR,DPR);
+  return{ctx,w,h};
+}
+function tvBg(ctx,w,h){
+  ctx.fillStyle='#131722';ctx.fillRect(0,0,w,h);
+  ctx.strokeStyle='#1e222d';ctx.lineWidth=1;
+  for(let i=0;i<h;i+=40){ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(w,i);ctx.stroke();}
+  for(let i=0;i<w;i+=60){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,h);ctx.stroke();}
+}
+function cndl(ctx,x,o,c,hi,lo,cw,bull){
+  const col=bull?'#26a69a':'#ef5350';
+  ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=1.2;
+  ctx.beginPath();ctx.moveTo(x+cw/2,hi);ctx.lineTo(x+cw/2,lo);ctx.stroke();
+  const top=Math.min(o,c),bh=Math.max(1,Math.abs(c-o));
+  if(bull){ctx.fillRect(x+.5,top,cw-1,bh);}
+  else{ctx.strokeRect(x+.5,top,cw-1,bh);ctx.fillStyle='rgba(239,83,80,.3)';ctx.fillRect(x+.5,top,cw-1,bh);ctx.fillStyle=col;}
+}
+function hl(ctx,y,x1,x2,col,dash=[]){
+  ctx.save();ctx.strokeStyle=col;ctx.lineWidth=1;ctx.setLineDash(dash);
+  ctx.beginPath();ctx.moveTo(x1,y);ctx.lineTo(x2,y);ctx.stroke();ctx.restore();
+}
+function zone(ctx,x1,y1,x2,y2,col,a=0.12){
+  ctx.save();ctx.fillStyle=col;ctx.globalAlpha=a;ctx.fillRect(x1,y1,x2-x1,y2-y1);ctx.globalAlpha=1;
+  ctx.strokeStyle=col;ctx.lineWidth=1;ctx.strokeRect(x1,y1,x2-x1,y2-y1);ctx.restore();
+}
+function txt(ctx,x,y,t,col,sz=8,align='center'){
+  ctx.save();ctx.fillStyle=col;ctx.font=`bold ${sz}px 'JetBrains Mono'`;ctx.textAlign=align;ctx.fillText(t,x,y);ctx.restore();
+}
+function arr(ctx,x1,y1,x2,y2,col){
+  ctx.save();ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  const a=Math.atan2(y2-y1,x2-x1);
+  ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-7*Math.cos(a-.4),y2-7*Math.sin(a-.4));ctx.lineTo(x2-7*Math.cos(a+.4),y2-7*Math.sin(a+.4));ctx.closePath();ctx.fill();ctx.restore();
+}
+
+// ═══════════ SPECIFIC DRAWS ═══════════
+window.drawStructure=function(canvas){
+  const{ctx,w,h}=setupC(canvas,220);tvBg(ctx,w,h);
+  const cw=15,gap=5,step=cw+gap,pad=22;
+  const raw=[[200,190,205,183],[188,212,215,185],[210,198,215,195],[198,232,235,195],[230,218,235,214],[218,248,252,215],[246,230,250,225],[228,258,262,225],[256,238,262,230],[238,215,242,210],[213,195,218,192],[193,205,196,189],[204,192,208,188]];
+  const minP=180,maxP=266,range=maxP-minP;
+  const toY=p=>pad+(1-(p-minP)/range)*(h-pad*2);
+  const sx=(w-raw.length*step)/2;
+  raw.forEach(([o,c,hi,lo],i)=>cndl(ctx,sx+i*step,toY(o),toY(c),toY(hi),toY(lo),cw,c>=o));
+  [[3,210,'BOS'],[5,230,'BOS'],[7,248,'BOS']].forEach(([i,p,t])=>{
+    hl(ctx,toY(p),sx+i*step,sx+(i+5)*step,'#8b5cf6',[4,4]);
+    txt(ctx,sx+(i+5)*step+16,toY(p)+4,t,'#8b5cf6',9,'left');
+  });
+  hl(ctx,toY(238),sx+8*step,sx+12*step,'#fb923c',[4,4]);
+  txt(ctx,sx+12*step+4,toY(238)+4,'CHoCH','#fb923c',9,'left');
+  [[1,212,'HH'],[2,198,'HL'],[3,232,'HH'],[4,218,'HL'],[5,248,'HH'],[6,230,'HL'],[7,258,'HH'],[8,238,'HL'],[9,215,'LH']].forEach(([i,p,t])=>{
+    const x=sx+i*step+cw/2,ih=t.endsWith('H')&&t!=='LH';
+    txt(ctx,x,ih?toY(p)-9:toY(p)+16,t,t==='LH'?'#fb923c':'#363a45',8);
+  });
+};
+
+window.drawOB=function(canvas){
+  const{ctx,w,h}=setupC(canvas,220);tvBg(ctx,w,h);
+  const cw=15,gap=5,step=cw+gap,pad=22;
+  const raw=[[215,205,219,200],[205,195,208,190],[194,185,198,182],[185,210,213,183],[209,228,231,207],[227,246,250,224],[244,232,248,228],[231,220,235,216],[219,205,223,202],[205,196,209,193],[196,210,213,194],[209,228,231,207],[227,244,248,224]];
+  const minP=178,maxP=254,range=maxP-minP;
+  const toY=p=>pad+(1-(p-minP)/range)*(h-pad*2);
+  const sx=(w-raw.length*step)/2;
+  zone(ctx,sx+2*step,toY(194),w-6,toY(185),'#5b9fff',0.1);
+  raw.forEach(([o,c,hi,lo],i)=>cndl(ctx,sx+i*step,toY(o),toY(c),toY(hi),toY(lo),cw,c>=o));
+  txt(ctx,sx+2*step+4,toY(194)-6,'Bullish OB','#5b9fff',9,'left');
+  arr(ctx,sx+3*step+cw/2,toY(185),sx+5*step+cw/2,toY(246),'#26a69a');
+  txt(ctx,sx+5*step+18,toY(220),'Імпульс','#26a69a',9,'left');
+  arr(ctx,sx+5*step+cw/2,toY(246),sx+9*step+cw/2,toY(196),'#ef5350');
+  txt(ctx,sx+8*step,toY(228),'Відкат','#ef5350',9,'left');
+  txt(ctx,sx+11*step+cw/2,toY(228)-10,'✓ Відбій','#8b5cf6',10);
+};
+
+window.drawFVG=function(canvas){
+  const{ctx,w,h}=setupC(canvas,200);tvBg(ctx,w,h);
+  const cw=15,gap=5,step=cw+gap,pad=20;
+  const raw=[[200,192,204,188],[191,183,195,180],[182,210,214,180],[209,230,233,207],[229,247,251,227],[245,234,249,230],[233,220,237,216],[219,208,223,205],[208,199,212,196],[200,214,216,197],[213,230,232,211],[229,246,249,227]];
+  const minP=176,maxP=256,range=maxP-minP;
+  const toY=p=>pad+(1-(p-minP)/range)*(h-pad*2);
+  const sx=(w-raw.length*step)/2;
+  const fy1=toY(207),fy2=toY(195);
+  zone(ctx,sx+2*step,fy1,w-6,fy2,'#8b5cf6',0.1);
+  hl(ctx,fy1,sx+2*step,w-6,'#8b5cf6',[4,4]);hl(ctx,fy2,sx+2*step,w-6,'#8b5cf6',[4,4]);
+  hl(ctx,(fy1+fy2)/2,sx+2*step,w-6,'rgba(139,92,246,.25)',[2,5]);
+  raw.forEach(([o,c,hi,lo],i)=>cndl(ctx,sx+i*step,toY(o),toY(c),toY(hi),toY(lo),cw,c>=o));
+  txt(ctx,sx+2*step+4,fy1-6,'FVG','#8b5cf6',9,'left');
+  txt(ctx,sx+2*step+4,fy2+12,'50% рівень','rgba(139,92,246,.6)',8,'left');
+  txt(ctx,sx+8*step+cw/2,toY(200)+14,'↓ Ціна входить у FVG','#d1d4dc',9);
+};
+
+window.drawLiq=function(canvas){
+  const{ctx,w,h}=setupC(canvas,220);tvBg(ctx,w,h);
+  const cw=14,gap=4,step=cw+gap,pad=22;
+  const raw=[[218,228,234,215],[227,222,236,220],[221,238,240,219],[237,229,243,226],[228,213,232,210],[212,202,216,198],[202,194,206,191],[193,200,202,190],[199,192,204,189],[191,180,195,177],[180,202,204,178],[201,218,220,199],[217,234,236,215],[233,250,253,231],[249,236,254,232]];
+  const minP=174,maxP=258,range=maxP-minP;
+  const toY=p=>pad+(1-(p-minP)/range)*(h-pad*2);
+  const sx=(w-raw.length*step)/2;
+  hl(ctx,toY(240),sx,w-6,'#fbbf24',[5,3]);txt(ctx,w-8,toY(240)-5,'BSL','#fbbf24',8,'right');
+  hl(ctx,toY(191),sx,w-6,'#fbbf24',[5,3]);txt(ctx,w-8,toY(191)+12,'SSL','#fbbf24',8,'right');
+  raw.forEach(([o,c,hi,lo],i)=>cndl(ctx,sx+i*step,toY(o),toY(c),toY(hi),toY(lo),cw,c>=o));
+  txt(ctx,sx+9*step+cw/2,toY(177)+14,'⚡ Sweep SSL','#ef5350',9);
+  txt(ctx,sx+10*step+cw/2,toY(202)-10,'Розворот↑','#26a69a',9);
+};
+
+window.drawEntry=function(canvas){
+  const{ctx,w,h}=setupC(canvas,240);tvBg(ctx,w,h);
+  const cw=15,gap=4,step=cw+gap,pad=22;
+  const raw=[[200,192,204,188],[191,184,195,181],[183,208,212,181],[207,226,230,205],[225,244,248,222],[243,230,247,226],[229,216,233,213],[215,202,219,199],[202,191,206,188],[190,180,194,177],[180,200,202,178],[199,218,220,197],[217,234,236,215],[233,252,255,231],[251,265,268,248]];
+  const minP=174,maxP=273,range=maxP-minP;
+  const toY=p=>pad+(1-(p-minP)/range)*(h-pad*2);
+  const sx=(w-raw.length*step)/2;
+  zone(ctx,sx+2*step,toY(208),w-6,toY(181),'#5b9fff',0.09);
+  hl(ctx,toY(188),sx+11*step,w-6,'#ef5350',[3,4]);hl(ctx,toY(200),sx+11*step,w-6,'#8b5cf6',[3,4]);
+  hl(ctx,toY(252),sx+11*step,w-6,'#fbbf24',[3,4]);hl(ctx,toY(265),sx+11*step,w-6,'rgba(251,191,36,.4)',[2,5]);
+  raw.forEach(([o,c,hi,lo],i)=>cndl(ctx,sx+i*step,toY(o),toY(c),toY(hi),toY(lo),cw,c>=o));
+  txt(ctx,sx+2*step+4,toY(208)-6,'OB+FVG','#5b9fff',9,'left');
+  txt(ctx,w-8,toY(188)-4,'SL','#ef5350',9,'right');txt(ctx,w-8,toY(200)-4,'Вхід','#8b5cf6',9,'right');
+  txt(ctx,w-8,toY(252)-4,'TP1','#fbbf24',9,'right');txt(ctx,w-8,toY(265)-4,'TP2','rgba(251,191,36,.6)',9,'right');
+  txt(ctx,sx+9*step+cw/2,toY(177)+14,'Sweep','#ef5350',9);txt(ctx,sx+11*step+cw/2,toY(220)-10,'✓ Вхід','#8b5cf6',10);
+};
+
+window.drawRR=function(canvas){
+  const{ctx,w,h}=setupC(canvas,170);tvBg(ctx,w,h);
+  const pad=28,bw=50,gap=14,chartH=h-pad*2;
+  const bars=[['Ризик',-1,'#ef5350'],['TP1',3,'#26a69a'],['TP2',6,'#26a69a']];
+  const maxV=6,totalW=bars.length*(bw+gap)-gap,sx=(w-totalW)/2;
+  bars.forEach(([l,v,col],i)=>{
+    const x=sx+i*(bw+gap),bh=Math.abs(v)/maxV*chartH;
+    ctx.fillStyle=col;ctx.globalAlpha=.15;ctx.fillRect(x,pad+chartH-bh,bw,bh);ctx.globalAlpha=1;
+    ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.strokeRect(x,pad+chartH-bh,bw,bh);
+    ctx.fillStyle=col;ctx.font=`bold 11px 'JetBrains Mono'`;ctx.textAlign='center';
+    ctx.fillText((v>0?'+':'')+v+'R',x+bw/2,pad+chartH-bh-5);
+    ctx.fillStyle='#363a45';ctx.font=`9px 'JetBrains Mono'`;ctx.fillText(l,x+bw/2,pad+chartH+15);
+  });
+};
+
+window.drawKillzones=function(canvas){
+  const{ctx,w,h}=setupC(canvas,140);tvBg(ctx,w,h);
+  const sessions=[
+    {name:'Asia',start:0,end:9,col:'rgba(91,159,255,.15)',border:'#5b9fff'},
+    {name:'London',start:10,end:18,col:'rgba(139,92,246,.15)',border:'#8b5cf6'},
+    {name:'NY',start:17,end:23,col:'rgba(251,146,60,.15)',border:'#fb923c'},
+  ];
+  const pad=24,chartW=w-pad*2;
+  const hourW=chartW/24;
+  sessions.forEach(s=>{
+    const x=pad+s.start*hourW,sw=(s.end-s.start)*hourW;
+    ctx.fillStyle=s.col;ctx.fillRect(x,10,sw,h-30);
+    ctx.strokeStyle=s.border;ctx.lineWidth=1;ctx.strokeRect(x,10,sw,h-30);
+    txt(ctx,x+sw/2,h/2+5,s.name,s.border,11);
+  });
+  // overlap
+  const ovX=pad+17*hourW,ovW=1*hourW;
+  ctx.fillStyle='rgba(255,255,255,.04)';ctx.fillRect(ovX,10,ovW,h-30);
+  txt(ctx,ovX+ovW/2,h-12,'Overlap','#787b86',8);
+  // time axis
+  [0,4,8,12,16,20,24].forEach(h_=>{
+    const x=pad+h_*hourW;
+    ctx.fillStyle='#363a45';ctx.font=`8px 'JetBrains Mono'`;ctx.textAlign='center';
+    ctx.fillText(h_.toString().padStart(2,'0')+':00',x,h-3);
+  });
+};
+
+window.drawAMD=function(canvas){
+  const{ctx,w,h}=setupC(canvas,200);tvBg(ctx,w,h);
+  const pad=24;
+  const phases=[
+    {name:'A',full:'Accumulation',col:'#5b9fff',x:pad,pw:(w-pad*2)*.28},
+    {name:'M',full:'Manipulation',col:'#ef5350',x:pad+(w-pad*2)*.29,pw:(w-pad*2)*.24},
+    {name:'D',full:'Distribution',col:'#8b5cf6',x:pad+(w-pad*2)*.55,pw:(w-pad*2)*.42},
+  ];
+  const ph=h-50;
+  const prices=[
+    [100,98],[99,102],[98,101],[100,99],[101,103],[99,95],[94,90],[88,93],[92,98],[96,102],[100,106],[104,112],[110,118],[116,124],[122,128]
+  ];
+  const minP=85,maxP=132,range=maxP-minP;
+  const toY=p=>10+(1-(p-minP)/range)*(ph);
+  // draw phases
+  phases.forEach(ph_=>{
+    ctx.fillStyle=ph_.col;ctx.globalAlpha=.07;ctx.fillRect(ph_.x,8,ph_.pw,ph);ctx.globalAlpha=1;
+    ctx.strokeStyle=ph_.col;ctx.lineWidth=1;ctx.strokeRect(ph_.x,8,ph_.pw,ph);
+    txt(ctx,ph_.x+ph_.pw/2,ph+18,ph_.full,ph_.col,9);
+    ctx.fillStyle=ph_.col;ctx.font=`bold 20px 'Bebas Neue'`;ctx.textAlign='center';
+    ctx.fillText(ph_.name,ph_.x+ph_.pw/2,40);
+  });
+  // price line
+  const cw=Math.floor((w-pad*2)/prices.length),step=cw;
+  ctx.strokeStyle='#d1d4dc';ctx.lineWidth=1.5;ctx.beginPath();
+  prices.forEach(([o,c],i)=>{
+    const x=pad+i*step+cw/2,y=toY((o+c)/2);
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    cndl(ctx,pad+i*step,toY(o),toY(c),toY(Math.max(o,c)+2),toY(Math.min(o,c)-1.5),cw-2,c>=o);
+  });
+};
+
+window.drawPO3=function(canvas){
+  const{ctx,w,h}=setupC(canvas,180);tvBg(ctx,w,h);
+  const pad=20;
+  // Power of 3: Open, sweep high (manipulation), close high
+  const pts=[
+    {label:'Open',x:.05,y:.5,col:'#d1d4dc'},
+    {label:'Sweep Low\n(Manipulation)',x:.35,y:.78,col:'#ef5350'},
+    {label:'Mark Up',x:.65,y:.25,col:'#26a69a'},
+    {label:'Close High',x:.9,y:.22,col:'#8b5cf6'},
+  ];
+  const cx=i=>pad+(w-pad*2)*i, cy=i=>pad+(h-pad*2)*i;
+  // draw price path
+  ctx.strokeStyle='#2a2e39';ctx.lineWidth=1.5;ctx.beginPath();
+  ctx.moveTo(cx(pts[0].x),cy(pts[0].y));
+  ctx.lineTo(cx(pts[1].x),cy(pts[1].y));
+  ctx.lineTo(cx(pts[2].x),cy(pts[2].y));
+  ctx.lineTo(cx(pts[3].x),cy(pts[3].y));
+  ctx.stroke();
+  ctx.strokeStyle='#d1d4dc';ctx.lineWidth=2;ctx.beginPath();
+  ctx.moveTo(cx(pts[0].x),cy(pts[0].y));
+  ctx.bezierCurveTo(cx(.2),cy(.6),cx(.25),cy(.85),cx(pts[1].x),cy(pts[1].y));
+  ctx.bezierCurveTo(cx(.45),cy(.65),cx(.55),cy(.3),cx(pts[2].x),cy(pts[2].y));
+  ctx.lineTo(cx(pts[3].x),cy(pts[3].y));
+  ctx.stroke();
+  pts.forEach(p=>{
+    ctx.fillStyle=p.col;ctx.beginPath();ctx.arc(cx(p.x),cy(p.y),4,0,Math.PI*2);ctx.fill();
+    const lines=p.label.split('\n');
+    lines.forEach((l,li)=>txt(ctx,cx(p.x),cy(p.y)+(p.y>.5?18:-(lines.length-li)*12)+li*12,l,p.col,8));
+  });
+  // Phases
+  txt(ctx,cx(.2),cy(.95),'① Consolidation','#5b9fff',8);
+  txt(ctx,cx(.5),cy(.95),'② Manipulation','#ef5350',8);
+  txt(ctx,cx(.78),cy(.95),'③ Distribution','#8b5cf6',8);
+};
+
+window.drawMTF=function(canvas){
+  const{ctx,w,h}=setupC(canvas,190);tvBg(ctx,w,h);
+  const tfs=[
+    {tf:'Weekly',role:'Глобальний тренд',col:'#fbbf24'},
+    {tf:'Daily',role:'Основна структура',col:'#fb923c'},
+    {tf:'4H',role:'Зона входу',col:'#8b5cf6'},
+    {tf:'1H',role:'Підтвердження',col:'#5b9fff'},
+    {tf:'15M',role:'Точний вхід',col:'#26a69a'},
+  ];
+  const bh=20,gap=6,totalH=tfs.length*(bh+gap),startY=(h-totalH)/2;
+  tfs.forEach((tf,i)=>{
+    const y=startY+i*(bh+gap);
+    const barW=(w-100)*(1-i*.12);
+    ctx.fillStyle=tf.col;ctx.globalAlpha=.12;ctx.fillRect(80,y,barW,bh);ctx.globalAlpha=1;
+    ctx.strokeStyle=tf.col;ctx.lineWidth=1;ctx.strokeRect(80,y,barW,bh);
+    txt(ctx,70,y+bh/2+4,tf.tf,tf.col,9,'right');
+    txt(ctx,84,y+bh/2+4,tf.role,'#787b86',8,'left');
+  });
+  // Arrow down
+  arr(ctx,w/2,startY-10,w/2,startY+(tfs.length*(bh+gap))+10,'rgba(255,255,255,.1)');
+  txt(ctx,w-10,h/2+4,'HTF → LTF','#363a45',8,'right');
+};
+
+window.drawOrderBook=function(canvas){
+  const{ctx,w,h}=setupC(canvas,180);tvBg(ctx,w,h);
+  const mid=h/2, pad=16;
+  // Bids (buy)
+  const bids=[80,65,50,38,28,18,10];
+  // Asks (sell)
+  const asks=[75,60,48,36,25,15,8];
+  const maxV=80, barH=18;
+  bids.forEach((v,i)=>{
+    const bw=(v/maxV)*(w/2-pad-4);
+    ctx.fillStyle='rgba(38,166,154,.2)';ctx.fillRect(w/2-4-bw,mid-(i+1)*barH+2,bw,barH-2);
+    ctx.strokeStyle='rgba(38,166,154,.4)';ctx.lineWidth=1;ctx.strokeRect(w/2-4-bw,mid-(i+1)*barH+2,bw,barH-2);
+  });
+  asks.forEach((v,i)=>{
+    const bw=(v/maxV)*(w/2-pad-4);
+    ctx.fillStyle='rgba(239,83,80,.2)';ctx.fillRect(w/2+4,mid+i*barH+2,bw,barH-2);
+    ctx.strokeStyle='rgba(239,83,80,.4)';ctx.lineWidth=1;ctx.strokeRect(w/2+4,mid+i*barH+2,bw,barH-2);
+  });
+  hl(ctx,mid,pad,w-pad,'#363a45');
+  txt(ctx,w/2,mid-3,'СПРЕД','#787b86',8);
+  txt(ctx,pad,mid-50,'Bids (Купівля)','#26a69a',8,'left');
+  txt(ctx,w-pad,mid+35,'Asks (Продаж)','#ef5350',8,'right');
+};
+
+// ═══════════ PAGES CONTENT ═══════════
+const H=(tag,title,text)=>`<div class="l-hero"><div class="l-tag">${tag}</div><div class="l-title">${title}</div><div class="l-text">${text}</div></div>`;
+const IB=(cls,title,desc)=>`<div class="ibox ${cls}"><div class="ib-t">${title}</div><div class="ib-d">${desc}</div></div>`;
+const TV=(pair,tf,legend,draw,h=220)=>`<div class="tv-chart"><div class="tv-topbar"><div><span class="tv-pair">${pair}</span><span class="tv-tf">${tf}</span></div><div class="tv-legend">${legend.map(([d,c])=>`<div class="tv-leg"><div class="tv-dot" style="background:${c}"></div>${d}</div>`).join('')}</div></div><canvas class="tv-canvas" height="${h}" data-draw="${draw}"></canvas></div>`;
+
+const PAGES={
+'market-mechanics':[
+  ['Ордери',H('Модуль B1 · Фундамент','Механіка<br><span>ринку</span>','Розуміння того як ринок функціонує технічно — це фундамент на якому будується все інше. Без цього SMC буде лише набором термінів.')+
+  IB('purple','📌 Чому це важливо','Більшість початківців торгують не розуміючи хто є на іншому боці угоди та як формується ціна. Це перший крок до реального розуміння ринку.')+
+  `<div class="sec-div">Типи ордерів</div>`+
+  `<div class="cards2">
+    <div class="c2"><div class="c2-i">🎯</div><div class="c2-t">Market Order</div><div class="c2-d">Виконується негайно за поточною ринковою ціною. Ти отримуєш гарантоване виконання але не гарантовану ціну.</div><div class="c2-b" style="background:rgba(239,83,80,.1);color:#ef5350">Негайно</div></div>
+    <div class="c2"><div class="c2-i">📋</div><div class="c2-t">Limit Order</div><div class="c2-d">Виконується тільки при досягненні вказаної ціни. Ти контролюєш ціну але не гарантуєш виконання.</div><div class="c2-b" style="background:rgba(139,92,246,.1);color:#a78bfa">За ціною</div></div>
+    <div class="c2"><div class="c2-i">🛑</div><div class="c2-t">Stop Order</div><div class="c2-d">Активується при досягненні стоп-ціни і стає ринковим. Використовується для SL та захисту позиції.</div><div class="c2-b" style="background:rgba(251,191,36,.1);color:#fbbf24">Захист</div></div>
+    <div class="c2"><div class="c2-i">🔗</div><div class="c2-t">Stop-Limit</div><div class="c2-d">Комбінація Stop та Limit. Активується при стоп-ціні але виконується за лімітною. Точніше але ризик не виконання.</div><div class="c2-b" style="background:rgba(91,159,255,.1);color:#5b9fff">Комбо</div></div>
+  </div>`+
+  IB('dark','💡 Для SMC трейдера','Ти переважно використовуватимеш: Limit Order для входу (в зону OB), Stop Order для SL, та Market Order для виходу якщо потрібна швидкість.')],
+
+  ['Стакан/Спред',TV('Стакан ордерів','Bid/Ask',[['Bids','#26a69a'],['Asks','#ef5350']],'drawOrderBook',180)+
+  IB('blue','📊 Стакан ордерів (Order Book)','Стакан показує відкриті ліміт-ордери на купівлю (Bids) і продаж (Asks). Великі блоки ордерів у стакані = зони де ціна може зупинитись або відбитись.')+
+  IB('purple','↔️ Спред','Різниця між ціною купівлі (Bid) і продажу (Ask). Чим вищий спред — тим дорожче тобі коштує кожна угода. На BTC спред зазвичай мінімальний.')+
+  `<div class="data-table-wrap"><table class="data-table"><thead><tr><th>Пара</th><th>Типовий спред</th><th>Рекомендація</th></tr></thead><tbody>
+    <tr><td>BTC/USDT</td><td class="p">$1–5</td><td class="g">Відмінно</td></tr>
+    <tr><td>ETH/USDT</td><td class="p">$0.5–2</td><td class="g">Відмінно</td></tr>
+    <tr><td>SOL/USDT</td><td class="p">$0.05–0.2</td><td class="g">Добре</td></tr>
+    <tr><td>Альткоїни</td><td class="y">0.5–2%</td><td class="r">Обережно</td></tr>
+  </tbody></table></div>`],
+
+  ['Ліквідність',IB('purple','💧 Ліквідність на рівні біржі','Ліквідність = скільки ордерів є у стакані. Висока ліквідність означає що ти можеш купити або продати великий обсяг не сильно рухаючи ціну.')+
+  `<div class="data-table-wrap"><table class="data-table"><thead><tr><th>Тип ліквідності</th><th>Що це означає</th><th>Вплив на тебе</th></tr></thead><tbody>
+    <tr><td class="g">Висока</td><td>Багато ордерів у стакані</td><td>Малий спред, легкий вхід/вихід</td></tr>
+    <tr><td class="y">Середня</td><td>Помірна кількість ордерів</td><td>Прийнятний спред</td></tr>
+    <tr><td class="r">Низька</td><td>Мало ордерів, тонкий стакан</td><td>Великий спред, слизький вхід</td></tr>
+  </tbody></table></div>`+
+  IB('teal','🔗 Ліквідність та SMC','У SMC коли ми говоримо про "ліквідність" — ми маємо на увазі скупчення стоп-ордерів роздрібних трейдерів. Великі гравці "полюють" на ці ордери щоб виконати свої великі позиції.')+
+  `<div class="highlight"><div class="hl-t">Ключовий звʼязок</div><div class="hl-d">Ринок = аукціон. Щоб хтось купив — хтось має продати. Великий гравець хоче купити $500М BTC. Йому потрібно $500М продавців. Де вони? Там де стоять стоп-лоси — нижче очевидних рівнів.</div></div>`],
+
+  ['Тест',`<div class="l-hero"><div class="l-tag">Перевір себе</div><div class="l-title">Тест:<br><span>Механіка ринку</span></div></div>`+
+  `<div class="quiz-box"><div class="quiz-q">Який ордер гарантує виконання але не гарантує ціну?</div><div class="quiz-opts">
+    <button class="quiz-opt" onclick="qA(this,false)">Limit Order</button>
+    <button class="quiz-opt" onclick="qA(this,true)">Market Order</button>
+    <button class="quiz-opt" onclick="qA(this,false)">Stop-Limit Order</button>
+  </div></div>`+
+  `<div class="quiz-box"><div class="quiz-q">Спред — це:</div><div class="quiz-opts">
+    <button class="quiz-opt" onclick="qA(this,false)">Комісія біржі</button>
+    <button class="quiz-opt" onclick="qA(this,false)">Різниця між поточною та вчорашньою ціною</button>
+    <button class="quiz-opt" onclick="qA(this,true)">Різниця між ціною купівлі (Bid) і продажу (Ask)</button>
+  </div></div>`],
+],
+
+'risk-math':[
+  ['Правило 1%',H('Модуль B2 · Критично','Математика<br><span>ризику</span>','Управління ризиком — це єдине що відрізняє трейдера який виживає від того хто зливає. Знай математику перш ніж відкривати першу угоду.')+
+  IB('red','⚠️ Правило 1% (або 2%)','Ніколи не ризикуй більше ніж 1–2% депозиту в одній угоді. З $100 це максимум $1–2. Виглядає мало — але це те що зберігає твій рахунок під час програшних серій.')+
+  `<div class="formula">Ризик на угоду = Депозит × 1%<br>$100 × 1% = $1 максимальний збиток<br><br>10 збиткових угод поспіль = −$10 (−10%)<br>Тебе не вдарить. Ти ще в грі.</div>`+
+  IB('dark','🧮 Чому саме 1%','При 10 збитках поспіль з ризиком 1% — ти втратиш 9.6% депозиту. При ризику 10% — 65%. Перший сценарій виправний. Другий — катастрофа.')],
+
+  ['Розрахунок позиції',IB('purple','📐 Формула розміру позиції','Розмір позиції розраховується виходячи з того скільки ти готовий втратити якщо ціна дійде до твого стоп-лосу.')+
+  `<div class="formula">Розмір позиції =<br>Ризик у $ ÷ (Вхід − Стоп-лос) × Вхід<br><br>Приклад:<br>Ризик $2, Вхід $83,000, SL $82,000<br>= $2 ÷ $1,000 × $83,000 = $166 позиція</div>`+
+  `<table class="data-table"><thead><tr><th>Депозит</th><th>Ризик 1%</th><th>SL 2%</th><th>Розмір позиції</th></tr></thead><tbody>
+    <tr><td>$100</td><td class="r">$1</td><td>$1.66</td><td class="p">~$50</td></tr>
+    <tr><td>$500</td><td class="r">$5</td><td>$8.30</td><td class="p">~$250</td></tr>
+    <tr><td>$1,000</td><td class="r">$10</td><td>$16.60</td><td class="p">~$500</td></tr>
+    <tr><td>$5,000</td><td class="r">$50</td><td>$83</td><td class="p">~$2,500</td></tr>
+  </tbody></table>`+
+  IB('teal','✅ Практичне правило для старту','З $100 торгуй позиціями по $10–15. Це дає тобі стоп близько $1–2 що відповідає правилу 1–2% ризику.')],
+
+  ['Математика RR',IB('blue','📊 Risk/Reward Ratio','RR = співвідношення потенційного прибутку до ризику. RR 1:3 означає: ризикуєш $1 щоб заробити $3.')+
+  `<div class="tv-chart"><div class="tv-topbar"><div><span class="tv-pair">Risk/Reward</span><span class="tv-tf">Візуалізація</span></div></div><canvas class="tv-canvas" height="170" data-draw="drawRR"></canvas></div>`+
+  `<table class="data-table"><thead><tr><th>Win Rate</th><th>RR 1:1</th><th>RR 1:2</th><th>RR 1:3</th></tr></thead><tbody>
+    <tr><td>30%</td><td class="r">−$40</td><td class="r">−$10</td><td class="g">+$20</td></tr>
+    <tr><td>40%</td><td class="r">−$20</td><td class="g">+$20</td><td class="g">+$60</td></tr>
+    <tr><td>50%</td><td>$0</td><td class="g">+$50</td><td class="g">+$100</td></tr>
+  </tbody></table><div style="font-size:9px;color:var(--muted2);text-align:center;margin-top:-6px;margin-bottom:12px">*на базі 10 угод по $1 ризику</div>`+
+  `<div class="highlight"><div class="hl-t">Висновок: правильний RR рятує навіть при низькому Win Rate</div><div class="hl-d">З RR 1:3 ти можеш виграти лише 34% угод і все одно бути в беззбитку. Це дає тобі простір для помилок поки вчишся.</div></div>`],
+
+  ['Серії та DrawDown',IB('orange','📉 Drawdown — просідання рахунку','Drawdown = максимальне падіння від піку до дна. Розумій свій максимально допустимий drawdown заздалегідь — це захищає від емоційних рішень.')+
+  `<table class="data-table"><thead><tr><th>Drawdown</th><th>Потрібно заробити щоб відновитись</th></tr></thead><tbody>
+    <tr><td class="g">10%</td><td class="g">+11%</td></tr>
+    <tr><td class="y">20%</td><td class="y">+25%</td></tr>
+    <tr><td class="r">30%</td><td class="r">+43%</td></tr>
+    <tr><td class="r">50%</td><td class="r">+100%</td></tr>
+    <tr><td class="r">70%</td><td class="r">+233%</td></tr>
+  </tbody></table>`+
+  IB('red','🚦 Правила контролю drawdown','При −3 збиткових угодах поспіль: зупинись на 24 години. При −5%: зупинись на тиждень. При −10%: серйозний аналіз стратегії. Ці правила мають бути написані до початку торгівлі.')],
+],
+
+'chart-anatomy':[
+  ['Свічки',H('Модуль B3 · Основа','Анатомія<br><span>графіка</span>','Японські свічки — мова ринку. Кожна свічка розповідає про бій між биками та ведмедями за певний проміжок часу.')+
+  IB('purple','🕯️ Структура свічки','Кожна свічка показує 4 значення: Open (відкриття), High (максимум), Low (мінімум), Close (закриття). Тіло = різниця між відкриттям та закриттям. Тіні = крайні значення.')+
+  `<div class="cards2">
+    <div class="c2"><div class="c2-i">🟢</div><div class="c2-t">Бичача свічка</div><div class="c2-d">Close > Open. Покупці перемогли за цей ТФ. Закрилась вище відкриття.</div><div class="c2-b" style="background:rgba(38,166,154,.1);color:#26a69a">Bullish</div></div>
+    <div class="c2"><div class="c2-i">🔴</div><div class="c2-t">Ведмежа свічка</div><div class="c2-d">Close < Open. Продавці перемогли. Закрилась нижче відкриття.</div><div class="c2-b" style="background:rgba(239,83,80,.1);color:#ef5350">Bearish</div></div>
+    <div class="c2"><div class="c2-i">📏</div><div class="c2-t">Довга тінь</div><div class="c2-d">Ціна пішла далеко але повернулась. Знак відхилення рівня. Сигнал reversalu.</div><div class="c2-b" style="background:rgba(251,191,36,.1);color:#fbbf24">Wick</div></div>
+    <div class="c2"><div class="c2-i">➖</div><div class="c2-t">Доджі</div><div class="c2-d">Open ≈ Close. Невизначеність. Бики та ведмеді рівні. Часто перед розворотом.</div><div class="c2-b" style="background:rgba(91,159,255,.1);color:#5b9fff">Doji</div></div>
+  </div>`],
+
+  ['Таймфрейми',IB('blue','⏱️ Таймфрейм = одна свічка','Таймфрейм визначає скільки часу займає формування однієї свічки. 4H свічка = все що сталось за 4 години. 1D свічка = весь торговий день.')+
+  `<table class="data-table"><thead><tr><th>ТФ</th><th>Використання в SMC</th><th>Кількість угод</th></tr></thead><tbody>
+    <tr><td class="y">Weekly</td><td>Глобальний тренд та HTF зони</td><td class="r">Дуже мало</td></tr>
+    <tr><td class="b">Daily</td><td>Основна структура, BOS</td><td class="r">1–4 на місяць</td></tr>
+    <tr><td class="p">4H</td><td>Зони OB та FVG, основний ТФ</td><td class="y">2–8 на тиждень</td></tr>
+    <tr><td class="p">1H</td><td>Підтвердження входу</td><td class="g">Декілька на день</td></tr>
+    <tr><td class="g">15M</td><td>Точний вхід, CHoCH/MSS</td><td class="g">Точний момент</td></tr>
+  </tbody></table>`+
+  `<div class="highlight"><div class="hl-t">Правило: завжди аналізуй зверху вниз</div><div class="hl-d">Починай з Weekly або Daily щоб зрозуміти куди йде ринок глобально. Потім спускайся до 4H для зон. Потім 15M для точного входу. Ніколи навпаки.</div></div>`],
+
+  ['TradingView',IB('purple','📊 TradingView — твій головний інструмент','TradingView — найкраща платформа для Price Action аналізу. Безкоштовна версія дає доступ до всіх необхідних інструментів для SMC.')+
+  `<div class="steps-list">
+    <div class="step-item"><div class="step-n">1</div><div class="step-c"><div class="step-t">Зареєструйся безкоштовно</div><div class="step-d">tradingview.com → New Chart → введи BINANCE:BTCUSDT</div></div></div>
+    <div class="step-item"><div class="step-n">2</div><div class="step-c"><div class="step-t">Налаштуй свічки</div><div class="step-d">Клікни на тип графіку вгорі → Candlestick. Бичачі свічки: #26a69a, Ведмежі: #ef5350</div></div></div>
+    <div class="step-item"><div class="step-n">3</div><div class="step-c"><div class="step-t">Використовуй тільки ці інструменти</div><div class="step-d">Горизонтальна лінія (рівні), Прямокутник (зони OB/FVG), Текст (підписи). Без індикаторів.</div></div></div>
+    <div class="step-item"><div class="step-n">4</div><div class="step-c"><div class="step-t">Збережи шаблон</div><div class="step-d">Зроби аналіз → Save → Chart Layout. Зберігай перед кожним вечірнім аналізом.</div></div></div>
+  </div>`+
+  IB('dark','⌨️ Корисні хоткеї TradingView','Alt+H = горизонтальна лінія · Alt+R = прямокутник · Ctrl+Z = скасувати · + = наближення · − = відdalення · Alt+L = log шкала')],
+],
+
+structure:[
+  ['Вступ',H('Модуль 01 · SMC Core','Структура<br><span>ринку</span>','Структура ринку — це мова якою розмовляють великі гравці. Навчившись її читати, ти зрозумієш куди піде ціна ще до того як більшість трейдерів це помітять.')+
+  IB('purple','💡 Головна ідея','Ринок рухається серіями — вищі хаї та лої в бичачому тренді, нижчі в ведмежому. Ця серія і є структура.')+
+  `<div class="cards2">
+    <div class="c2"><div class="c2-i">📍</div><div class="c2-t">Визначає напрямок</div><div class="c2-d">Знаючи тренд — торгуєш тільки в його напрямку. Це фільтрує 80% поганих угод.</div></div>
+    <div class="c2"><div class="c2-i">🎯</div><div class="c2-t">Дає зони входу</div><div class="c2-d">Кожен відкат до HL у висхідному тренді — потенційна точка входу з OB або FVG.</div></div>
+    <div class="c2"><div class="c2-i">⚠️</div><div class="c2-t">Сигналізує розворот</div><div class="c2-d">CHoCH попереджає про зміну тренду раніше ніж будь-який індикатор.</div></div>
+    <div class="c2"><div class="c2-i">🏗️</div><div class="c2-t">Основа SMC</div><div class="c2-d">Без розуміння структури OB, FVG та ліквідність не мають сенсу.</div></div>
+  </div>`],
+  ['BOS / CHoCH',TV('BTC/USDT','4H · Структура ринку',[['BOS','#8b5cf6'],['CHoCH','#fb923c']],'drawStructure',220)+
+  IB('purple','📈 BOS — Break of Structure','Ціна оновила попередній значимий хай (у висхідному тренді). Це підтвердження що бики контролюють ринок і тренд продовжується. Після BOS шукаємо відкат для входу.')+
+  IB('orange','🔄 CHoCH — Change of Character','Ціна вперше порушила останній значимий лой у висхідному тренді. Це перший сигнал що тренд може змінитись. Сам по собі не є сигналом для шорту.')+
+  `<div class="formula">Висхідний: HH → HL → HH → HL<br>Низхідний: LH → LL → LH → LL<br>Розворот: CHoCH → BOS у новому напрямку</div>`],
+  ['Тренди',`<table class="data-table"><thead><tr><th>Стан</th><th>Серія</th><th>Дія</th></tr></thead><tbody>
+    <tr><td class="g">Висхідний</td><td>HH → HL → HH → HL</td><td class="g">Тільки лонги</td></tr>
+    <tr><td class="r">Низхідний</td><td>LH → LL → LH → LL</td><td class="y">Уникати</td></tr>
+    <tr><td style="color:var(--muted2)">Флет</td><td>Рівні H та L</td><td style="color:var(--muted2)">Не торгувати</td></tr>
+  </tbody></table>`+IB('teal','✅ Правило','Підтверджуй тренд на 2 таймфреймах (1D + 4H). Не відкривай лонг в низхідному тренді. Флет = відпочинок.')],
+  ['Тест',`<div class="quiz-box"><div class="quiz-q">Ціна: HH → HL → HH → CHoCH. Що далі?</div><div class="quiz-opts">
+    <button class="quiz-opt" onclick="qA(this,false)">Продовження зростання</button>
+    <button class="quiz-opt" onclick="qA(this,true)">Можливий розворот, чекаємо BOS вниз</button>
+    <button class="quiz-opt" onclick="qA(this,false)">Нічого особливого</button>
+  </div></div><div class="quiz-box"><div class="quiz-q">З якого ТФ починаємо аналіз структури?</div><div class="quiz-opts">
+    <button class="quiz-opt" onclick="qA(this,false)">15 хвилин</button>
+    <button class="quiz-opt" onclick="qA(this,true)">Daily або Weekly</button>
+    <button class="quiz-opt" onclick="qA(this,false)">4H</button>
+  </div></div>`],
+],
+
+ob:[
+  ['Що таке OB',H('Модуль 02','Order<br><span>Block</span>','Order Block — зона де інституційні трейдери розміщували великі ордери. Ціна повертається туди щоб заповнити незавершені позиції.')+
+  TV('BTC/USDT','4H · Order Block',[['Bullish OB','#5b9fff'],['Відкат','#ef5350']],'drawOB',220)+
+  IB('blue','🟦 Визначення','Bullish OB = остання ведмежа свічка перед сильним висхідним імпульсом. Bearish OB = остання бичача свічка перед низхідним імпульсом.')],
+  ['Типи та ознаки',`<table class="data-table"><thead><tr><th>Тип</th><th>Де шукати</th><th>Входимо</th></tr></thead><tbody>
+    <tr><td class="b">Bullish OB</td><td>Остання ведмежа перед бичачим імпульсом</td><td class="g">Лонг при поверненні</td></tr>
+    <tr><td class="r">Bearish OB</td><td>Остання бичача перед ведмежим імпульсом</td><td class="r">Шорт при поверненні</td></tr>
+  </tbody></table>`+
+  `<div class="rule-list">
+    <div class="rule-item"><span class="ri">🟢</span>Після OB був сильний імпульс (3+ великих свічки)</div>
+    <div class="rule-item"><span class="ri">🟢</span>OB ще ні разу не тестувався (fresh OB)</div>
+    <div class="rule-item"><span class="ri">🟢</span>OB знаходиться в Discount зоні (нижче 50%)</div>
+    <div class="rule-item"><span class="ri">🔴</span>OB тестувався 2+ рази — значно слабший</div>
+    <div class="rule-item"><span class="ri">🔴</span>OB в Premium зоні при лонгу — уникай</div>
+  </div>`],
+  ['Premium/Discount',IB('purple','📐 Premium та Discount','Відмір останній рух від лою до хаю. 50% = Equilibrium. Нижче 50% = Discount (купуємо). Вище 50% = Premium (продаємо).')+
+  `<table class="data-table"><thead><tr><th>Зона</th><th>Рівень</th><th>Дія</th></tr></thead><tbody>
+    <tr><td class="r">Premium</td><td>Вище 50%</td><td class="r">Шорт або вихід з лонгу</td></tr>
+    <tr><td style="color:var(--muted2)">Equilibrium</td><td>50%</td><td style="color:var(--muted2)">Нейтральна зона</td></tr>
+    <tr><td class="g">Discount</td><td>Нижче 50%</td><td class="g">Лонг входи</td></tr>
+  </tbody></table>`+`<div class="formula">На TradingView: Fibonacci 0→100% від лою до хаю<br>Рівень 0.5 = Equilibrium<br>OB нижче 0.5 = Discount OB = ✅</div>`],
+  ['Тест OB',`<div class="quiz-box"><div class="quiz-q">Що таке Fresh OB?</div><div class="quiz-opts">
+    <button class="quiz-opt" onclick="qA(this,false)">OB що вже багато разів тестувався</button>
+    <button class="quiz-opt" onclick="qA(this,true)">OB що ще жодного разу не тестувався</button>
+    <button class="quiz-opt" onclick="qA(this,false)">Будь-який OB на 4H</button>
+  </div></div><div class="quiz-box"><div class="quiz-q">Де краще шукати Bullish OB?</div><div class="quiz-opts">
+    <button class="quiz-opt" onclick="qA(this,false)">В Premium зоні (вище 50%)</button>
+    <button class="quiz-opt" onclick="qA(this,true)">В Discount зоні (нижче 50%)</button>
+    <button class="quiz-opt" onclick="qA(this,false)">Не важливо де</button>
+  </div></div>`],
+],
+
+fvg:[
+  ['Що таке FVG',H('Модуль 03','Fair Value<br><span>Gap</span>','FVG виникає коли ціна рухається так швидко, що між трьома свічками утворюється порожнеча де не було торгів.')+
+  TV('BTC/USDT','4H · Fair Value Gap',[['Bullish FVG','#8b5cf6']],'drawFVG',200)+
+  `<div class="formula">Bullish FVG: Low свічки[2] &gt; High свічки[0]<br>Bearish FVG: High свічки[2] &lt; Low свічки[0]</div>`+
+  IB('purple','🧲 Чому ціна повертається','Ринок прагне до балансу. FVG = незбалансована зона де не відбулось двосторонньої торгівлі. Маркет-мейкери повертають туди ціну щоб "заповнити" незакриті ордери.')],
+  ['FVG + OB',IB('blue','🎯 OB + FVG = Confluence','Коли FVG збігається з OB в одній зоні — це найсильніший сигнал. Ймовірність відпрацювання максимальна.')+
+  `<table class="data-table"><thead><tr><th>Комбінація</th><th>Сила</th></tr></thead><tbody>
+    <tr><td>Тільки OB</td><td class="y">Середня</td></tr>
+    <tr><td class="b">OB + FVG</td><td class="g">Висока</td></tr>
+    <tr><td class="p">OB + FVG + LIQ</td><td class="g">Дуже висока</td></tr>
+  </tbody></table>`+`<div class="formula">Ідеальна зона входу =<br>Bullish OB + Bullish FVG + Discount зона<br>+ Liquidity Sweep нижче</div>`],
+  ['Тест FVG',`<div class="quiz-box"><div class="quiz-q">FVG заповнений на 100% — він все ще активний?</div><div class="quiz-opts">
+    <button class="quiz-opt" onclick="qA(this,false)">Так, стає ще сильнішим</button>
+    <button class="quiz-opt" onclick="qA(this,true)">Ні, він більше не є активним</button>
+    <button class="quiz-opt" onclick="qA(this,false)">Залежить від ситуації</button>
+  </div></div>`],
+],
+
+liquidity:[
+  ['BSL та SSL',H('Модуль 04','Ліквідність:<br><span>де гроші</span>','Ліквідність — скупчення стоп-лосів роздрібних трейдерів. Великі гравці полюють на них щоб заповнити позиції.')+
+  TV('BTC/USDT','4H · Liquidity Hunt',[['BSL','#fbbf24'],['SSL','#fbbf24']],'drawLiq',220)+
+  `<table class="data-table"><thead><tr><th>Тип</th><th>Де</th><th>Що там</th></tr></thead><tbody>
+    <tr><td class="g">BSL</td><td>ВИЩЕ хаїв та EQH</td><td>Стоп-лоси шортистів + Buy Stop</td></tr>
+    <tr><td class="r">SSL</td><td>НИЖЧЕ лоїв та EQL</td><td>Стоп-лоси лонгістів + Sell Stop</td></tr>
+  </tbody></table>`],
+  ['Sweep та Reverse',IB('yellow','⚡ Liquidity Sweep','Ціна пробиває рівень, збирає стоп-лоси та швидко повертається. Маніпуляція завершена — готуйся до входу в протилежному напрямку.')+
+  `<div class="steps-list">
+    <div class="step-item"><div class="step-n">1</div><div class="step-c"><div class="step-t">Знайди EQH або EQL</div><div class="step-d">Два+ хаї/лої на однаковому рівні = скупчення ліквідності</div></div></div>
+    <div class="step-item"><div class="step-n">2</div><div class="step-c"><div class="step-t">Чекай Sweep</div><div class="step-d">Ціна пробила рівень та одразу повернулась — зібрала ліквідність</div></div></div>
+    <div class="step-item"><div class="step-n">3</div><div class="step-c"><div class="step-t">CHoCH на 15M → вхід</div><div class="step-d">Після sweep шукаємо розворот структури на нижчому ТФ</div></div></div>
+  </div>`],
+  ['Тест',`<div class="quiz-box"><div class="quiz-q">Ціна пробила EQL, зібрала SSL і швидко повернулась вгору. Що це?</div><div class="quiz-opts">
+    <button class="quiz-opt" onclick="qA(this,false)">Продовження низхідного тренду</button>
+    <button class="quiz-opt" onclick="qA(this,true)">Liquidity Sweep — можливий розворот вгору</button>
+    <button class="quiz-opt" onclick="qA(this,false)">Нейтральний рух</button>
+  </div></div>`],
+],
+
+entry:[
+  ['Top-Down',H('Модуль 05','Top-Down<br><span>Аналіз</span>','Аналіз зверху вниз — від вищого таймфрейму до нижчого. Завжди знай де ти знаходишся на карті перед тим як шукати вхід.')+
+  TV('BTC/USDT','Мультитаймфреймовий',[['4H OB','#5b9fff'],['Вхід','#8b5cf6'],['SL','#ef5350'],['TP','#fbbf24']],'drawEntry',240)+
+  `<div class="formula">1D (напрямок) → 4H (зона) → 15M (вхід)</div>`+
+  IB('teal','✅ Правило узгодженості','Всі три ТФ мають "говорити" одне й те саме. 1D бичачий + 4H бичачий + 15M дає сигнал лонг = ідеальна узгодженість.')],
+  ['3 Моделі входу',IB('purple','Модель A — MSS','Ціна в OB зоні → CHoCH на 15M (мінімальний розворот) → входимо. Найточніша модель.')+
+  IB('blue','Модель B — Rejection Wick','Довга тінь відбила зону OB → наступна свічка закрилась сильно → входимо на закритті.')+
+  IB('orange','Модель C — Engulfing','Поглинаюча свічка закрила FVG в зоні OB → входимо на закритті. Потрібен великий обсяг.')],
+  ['Фільтри якості',`<table class="data-table"><thead><tr><th>Критерій</th><th>Бали</th></tr></thead><tbody>
+    <tr><td>Напрямок = 1D тренд</td><td class="g">+2</td></tr>
+    <tr><td>OB + FVG (confluence)</td><td class="g">+2</td></tr>
+    <tr><td>Discount/Premium підтверджує</td><td class="p">+1</td></tr>
+    <tr><td>Ліквідність вже зібрана</td><td class="p">+1</td></tr>
+    <tr><td>CHoCH/MSS на 15M</td><td class="g">+2</td></tr>
+    <tr><td>Проти тренду або без BOS</td><td class="r">−3</td></tr>
+  </tbody></table>`+IB('teal','✅ Рішення','0–3: не входимо. 4–5: мінімальний розмір. 6–8: повноцінний вхід.')],
+  ['Помилки',`<div class="rule-list">
+    <div class="rule-item"><span class="ri">❌</span>FOMO вхід — ціна вже пішла. Чекай наступний сетап.</div>
+    <div class="rule-item"><span class="ri">❌</span>Вхід без CHoCH/MSS підтвердження на 15M</div>
+    <div class="rule-item"><span class="ri">❌</span>Вхід проти 1D тренду навіть якщо є сетап на 4H</div>
+    <div class="rule-item"><span class="ri">❌</span>RR менше 1:2 — пропусти угоду</div>
+    <div class="rule-item"><span class="ri">✅</span>Пропустив сетап — окей! Краще пропустити добру угоду ніж увійти в погану</div>
+  </div>`],
+],
+
+killzones:[
+  ['Сесії',H('Модуль A1 · Просунутий','Time & Price:<br><span>Killzones</span>','Ціна не рухається рівномірно 24/7. Вона доставляється у конкретні часові вікна — торгові сесії. Знання цього дає величезну перевагу.')+
+  TV('Торгові сесії','UTC+2 (Київ)',[['Asia','#5b9fff'],['London','#8b5cf6'],['NY','#fb923c']],'drawKillzones',140)+
+  `<div class="kz-grid">
+    <div class="kz-row"><div class="kz-dot" style="background:#5b9fff"></div><div class="kz-time">02:00–10:00</div><div class="kz-info"><div class="kz-name">Азійська сесія</div><div class="kz-desc">Низький обсяг. Ціна консолідується. Часто формується SSL/BSL яку London Killzone потім збирає.</div></div></div>
+    <div class="kz-row"><div class="kz-dot" style="background:#8b5cf6"></div><div class="kz-time">10:00–13:00</div><div class="kz-info"><div class="kz-name">London Killzone 🔥</div><div class="kz-desc">Найкращий час для торгівлі. London відкривається та одразу забирає ліквідність Азії. Найбільші рухи дня.</div></div></div>
+    <div class="kz-row"><div class="kz-dot" style="background:#fb923c"></div><div class="kz-time">16:00–19:00</div><div class="kz-info"><div class="kz-name">NY Killzone 🔥</div><div class="kz-desc">Другий найкращий час. Нью-Йорк відкривається, часто продовжує London тренд або робить reversal.</div></div></div>
+    <div class="kz-row"><div class="kz-dot" style="background:#363a45"></div><div class="kz-time">13:00–16:00</div><div class="kz-info"><div class="kz-name">Мертва зона</div><div class="kz-desc">Перекрий між сесіями. Уникай торгівлі — низький обсяг, хаотичні рухи, пастки.</div></div></div>
+  </div>`],
+  ['Вплив часу',IB('orange','⏰ Час = контекст','Одна і та сама свічкова формація має різне значення в різний час. OB що сформувався під час London Killzone набагато надійніший ніж такий же OB в азійську сесію.')+
+  `<table class="data-table"><thead><tr><th>Час (UTC+2)</th><th>Якість сетапів</th><th>Що очікувати</th></tr></thead><tbody>
+    <tr><td>02:00–10:00</td><td class="r">Низька</td><td>Консолідація, накопичення ліквідності</td></tr>
+    <tr><td class="p">10:00–13:00</td><td class="g">Висока</td><td>London sweep + основний рух дня</td></tr>
+    <tr><td>13:00–16:00</td><td class="r">Низька</td><td>Консолідація між сесіями</td></tr>
+    <tr><td class="p">16:00–19:00</td><td class="g">Висока</td><td>NY підтверджує або розвертає London</td></tr>
+    <tr><td>19:00–02:00</td><td class="y">Середня</td><td>NY продовжує рух, потім затихає</td></tr>
+  </tbody></table>`+`<div class="highlight"><div class="hl-t">Практичне правило для 18:00–22:00 аналізу</div><div class="hl-d">Ти аналізуєш ввечері — це NY сесія. Ідеально для торгівлі. Твій вечірній протокол (18:00–20:00) збігається з активною NY Killzone.</div></div>`],
+  ['London Sweep',IB('purple','🎯 London Open Sweep — класична маніпуляція','Це одна з найпоширеніших маніпулятивних моделей. London відкривається, збирає ліквідність Азії (Sweep), потім йде в реальному напрямку.')+
+  `<div class="steps-list">
+    <div class="step-item"><div class="step-n">1</div><div class="step-c"><div class="step-t">Азія формує рейндж (02:00–10:00)</div><div class="step-d">Ціна консолідується між хаєм та лоєм. Формуються EQH та EQL.</div></div></div>
+    <div class="step-item"><div class="step-n">2</div><div class="step-c"><div class="step-t">London Sweep (10:00–11:00)</div><div class="step-d">Ціна пробиває або хай або лой Азії — збирає ліквідність. Це маніпуляція.</div></div></div>
+    <div class="step-item"><div class="step-n">3</div><div class="step-c"><div class="step-t">Розворот та основний рух (11:00–13:00)</div><div class="step-d">Після sweep ціна розвертається в реальному напрямку. Входимо після CHoCH.</div></div></div>
+  </div>`,],
+  ['Тест Killzones',`<div class="quiz-box"><div class="quiz-q">London Killzone — це приблизно:</div><div class="quiz-opts">
+    <button class="quiz-opt" onclick="qA(this,false)">02:00–08:00 UTC+2</button>
+    <button class="quiz-opt" onclick="qA(this,true)">10:00–13:00 UTC+2</button>
+    <button class="quiz-opt" onclick="qA(this,false)">20:00–24:00 UTC+2</button>
+  </div></div><div class="quiz-box"><div class="quiz-q">Чому азійська сесія часто малоактивна для торгівлі?</div><div class="quiz-opts">
+    <button class="quiz-opt" onclick="qA(this,true)">Низький обсяг, консолідація, пастки</button>
+    <button class="quiz-opt" onclick="qA(this,false)">Занадто великі рухи</button>
+    <button class="quiz-opt" onclick="qA(this,false)">Немає ліквідних пар</button>
+  </div></div>`],
+],
+
+mtf:[
+  ['HTF → LTF',H('Модуль A2 · Просунутий','Мульти-<br><span>таймфрейм</span>','Мистецтво переходу між таймфреймами — це те що відрізняє просунутого трейдера. HTF дає контекст, LTF дає точність.')+
+  TV('Перехід ТФ','HTF → MTF → LTF',[['Weekly/Daily','#fbbf24'],['4H','#8b5cf6'],['15M','#26a69a']],'drawMTF',190)+
+  IB('purple','🔭 Логіка переходу','Уяви що ти дивишся на карту міста (HTF) потім на карту вулиці (MTF) і потім на навігатор пішохода (LTF). Кожен рівень звужує фокус та підвищує точність.')],
+  ['Практика MTF',`<div class="steps-list">
+    <div class="step-item"><div class="step-n">W/D</div><div class="step-c"><div class="step-t">HTF: Де ми глобально?</div><div class="step-d">Визнач тренд. Знайди незакриті HTF OB та FVG. Це твоя "карта". Ніколи не торгуй без цього контексту.</div></div></div>
+    <div class="step-item"><div class="step-n">4H</div><div class="step-c"><div class="step-t">MTF: Зона та структура</div><div class="step-d">Підтвердив BOS у напрямку HTF тренду. Визнач зону відкату (OB+FVG). Це твоя "вулиця".</div></div></div>
+    <div class="step-item"><div class="step-n">1H</div><div class="step-c"><div class="step-t">LTF: Входи в зону</div><div class="step-d">Ціна входить в 4H OB зону. Дивись на 1H чи є CHoCH. Це перше підтвердження.</div></div></div>
+    <div class="step-item"><div class="step-n">15M</div><div class="step-c"><div class="step-t">LTF: Точний вхід</div><div class="step-d">MSS або CHoCH на 15M = точний вхід. Стоп нижче OB. Максимальна точність.</div></div></div>
+  </div>`+
+  IB('orange','⚠️ Найпоширеніша помилка MTF','Торгувати сетап на 4H що суперечить 1D тренду. "Гарний сетап на 4H але 1D ведмежий" = поганий сетап. HTF завжди має пріоритет.')],
+  ['Тест MTF',`<div class="quiz-box"><div class="quiz-q">Ти бачиш відмінний Bullish OB на 4H. Але на Daily — BOS вниз (низхідний тренд). Що робиш?</div><div class="quiz-opts">
+    <button class="quiz-opt" onclick="qA(this,false)">Входжу в лонг — сетап виглядає добре</button>
+    <button class="quiz-opt" onclick="qA(this,true)">Пропускаю — сетап проти HTF тренду</button>
+    <button class="quiz-opt" onclick="qA(this,false)">Входжу але з меншим розміром</button>
+  </div></div>`],
+],
+
+amd:[
+  ['AMD Модель',H('Модуль A3 · Майстерність','AMD &<br><span>Power of 3</span>','Ринок рухається не хаотично — він слідує алгоритму. AMD та Power of 3 описують цей алгоритм. Розуміння цього переводить тебе на новий рівень.')+
+  TV('AMD Model','Accumulation → Manipulation → Distribution',[['Accumulation','#5b9fff'],['Manipulation','#ef5350'],['Distribution','#8b5cf6']],'drawAMD',200)+
+  IB('purple','🌀 AMD — три фази ринку','Кожен значний рух ціни проходить через три фази: Accumulation (накопичення), Manipulation (маніпуляція), Distribution (розподіл/рух).')],
+  ['Три фази',`<div class="cards2">
+    <div class="c2"><div class="c2-i">📦</div><div class="c2-t">A — Accumulation</div><div class="c2-d">Великі гравці тихо накопичують позиції. Ціна консолідується у вузькому діапазоні. Виглядає як "нічого не відбувається".</div><div class="c2-b" style="background:rgba(91,159,255,.1);color:#5b9fff">Тиша</div></div>
+    <div class="c2"><div class="c2-i">🎭</div><div class="c2-t">M — Manipulation</div><div class="c2-d">Ціна різко рухається в "неправильному" напрямку — збирає стоп-лоси роздрібних трейдерів та ліквідність. Liquidity sweep.</div><div class="c2-b" style="background:rgba(239,83,80,.1);color:#ef5350">Пастка</div></div>
+    <div class="c2"><div class="c2-i">🚀</div><div class="c2-t">D — Distribution</div><div class="c2-d">Ціна рухається в реальному напрямку. Великі гравці "розподіляють" свої позиції продаючи роздрібним. Основний тренд.</div><div class="c2-b" style="background:rgba(139,92,246,.1);color:#a78bfa">Рух</div></div>
+    <div class="c2"><div class="c2-i">🔄</div><div class="c2-t">Повторення</div><div class="c2-d">Після Distribution цикл починається знову. Накопичення нового рівня → нова маніпуляція → новий рух.</div><div class="c2-b" style="background:rgba(251,191,36,.1);color:#fbbf24">Цикл</div></div>
+  </div>`+IB('orange','⚡ Де входити в AMD циклі','Ідеальний вхід = після фази M (Маніпуляція), на початку фази D (Distribution). Тобто після Liquidity Sweep + CHoCH.')],
+  ['Power of 3',H('','Power of<br><span>3 (PO3)</span>','Power of 3 = три частини кожного торгового дня: Consolidation, Manipulation, Distribution.')+
+  TV('Power of 3','Daily cycle',[['Consol.','#5b9fff'],['Manip.','#ef5350'],['Distrib.','#8b5cf6']],'drawPO3',180)+
+  IB('blue','📐 Як працює PO3','1️⃣ Ціна консолідується (Азія). 2️⃣ Маніпуляція — sweep вгору або вниз (London open). 3️⃣ Рух в реальному напрямку (London/NY). Ця модель повторюється щодня.')],
+  ['Тест AMD',`<div class="quiz-box"><div class="quiz-q">У якій фазі AMD найкращий момент для входу?</div><div class="quiz-opts">
+    <button class="quiz-opt" onclick="qA(this,false)">В кінці Accumulation</button>
+    <button class="quiz-opt" onclick="qA(this,true)">Після Manipulation (Sweep) на початку Distribution</button>
+    <button class="quiz-opt" onclick="qA(this,false)">В середині Distribution</button>
+  </div></div>`],
+],
+
+narrative:[
+  ['Order Flow',H('Модуль A4 · Майстерність','Market<br><span>Narrative</span>','Найпросунутіший рівень SMC — не просто знаходити OB та FVG, а розуміти "чому" ціна знаходиться там де вона є і "куди" йде далі.')+
+  IB('purple','📖 Що таке Market Narrative','Narrative = "історія" яку розповідає ціна. Куди спрямований Order Flow? Де знаходяться незакриті зони? Хто контролює ринок зараз — бики чи ведмеді?')+
+  IB('blue','🌊 Order Flow','Order Flow = загальний напрямок "великих грошей". Якщо інституційні гравці купують — Order Flow бичачий. Ти відчуваєш Order Flow через структуру: BOS вгору = бичачий OBF.')],
+  ['Пріоритет та контекст',`<div class="steps-list">
+    <div class="step-item"><div class="step-n">1</div><div class="step-c"><div class="step-t">Визнач HTF Narrative (Weekly/Daily)</div><div class="step-d">Хто контролює? Є чіткий BOS вгору = бичачий Order Flow. Це ПРІОРИТЕТ для всіх нижчих ТФ.</div></div></div>
+    <div class="step-item"><div class="step-n">2</div><div class="step-c"><div class="step-t">Де незакриті HTF зони?</div><div class="step-d">Незакриті Weekly або Daily OB та FVG = "магніти" куди ціна ПОВИННА прийти. Ці зони є кінцевими цілями.</div></div></div>
+    <div class="step-item"><div class="step-n">3</div><div class="step-c"><div class="step-t">Як 4H підтримує Narrative?</div><div class="step-d">4H структура має підтверджувати HTF Narrative. Якщо ні — є конфлікт, торгуй обережно або пропусти.</div></div></div>
+    <div class="step-item"><div class="step-n">4</div><div class="step-c"><div class="step-t">Читай ціну як "розповідь"</div><div class="step-d">Не просто "є OB значить входжу". А "чому ціна повернулась сюди? Що великий гравець хоче зробити?"</div></div></div>
+  </div>`],
+  ['Не торгуй паттерни',IB('red','❌ Найбільша пастка — "паттерни в повітрі"','Бачити OB або FVG і одразу входити без розуміння контексту = найпоширеніша помилка просунутих початківців. Паттерн без Narrative = азартна гра.')+
+  `<table class="data-table"><thead><tr><th>Неправильно</th><th>Правильно</th></tr></thead><tbody>
+    <tr><td class="r">"Бачу OB → входжу"</td><td class="g">"OB в Discount зоні + HTF бичачий + London Killzone + SSL зібрана → входжу"</td></tr>
+    <tr><td class="r">"Є CHoCH → це розворот"</td><td class="g">"CHoCH проти HTF тренду = тільки корекція, не розворот"</td></tr>
+    <tr><td class="r">"FVG незакрита → ціна туди піде"</td><td class="g">"FVG незакрита + Order Flow в той бік + немає перешкод = висока ймовірність"</td></tr>
+  </tbody></table>`+`<div class="highlight"><div class="hl-t">Мета: стати "детективом" а не "паттерн-матчером"</div><div class="hl-d">Запитуй себе: "Що великий гравець намагається зробити? Де йому потрібна ліквідність? Яка наступна логічна дія ринку?" Відповіді на ці питання і є реальний трейдинг.</div></div>`],
+],
+
+risk:[
+  ['SL TP та RR',H('Модуль 06','Ризик та<br><span>Журнал</span>','Навіть найкраща стратегія провалиться без правильного управління капіталом.')+
+  `<table class="data-table"><thead><tr><th>Параметр</th><th>Значення</th><th>$100</th></tr></thead><tbody>
+    <tr><td>Ризик/угоду</td><td class="y">1–2%</td><td class="g">$1–2</td></tr>
+    <tr><td>Розмір позиції</td><td>10–15%</td><td class="g">$10–15</td></tr>
+    <tr><td>SL</td><td>Нижче OB</td><td class="r">За структурою</td></tr>
+    <tr><td>TP1</td><td class="g">+4% (50%)</td><td class="g">Найближча BSL</td></tr>
+    <tr><td>TP2</td><td class="g">+8% (50%)</td><td class="g">Наступна зона</td></tr>
+    <tr><td>Мін. RR</td><td class="g">1:3</td><td>$1 → $3+</td></tr>
+  </tbody></table>`+
+  `<div class="tv-chart"><div class="tv-topbar"><div><span class="tv-pair">Risk/Reward</span><span class="tv-tf">1:3</span></div></div><canvas class="tv-canvas" height="170" data-draw="drawRR"></canvas></div>`],
+  ['Управління позицією',`<div class="steps-list">
+    <div class="step-item"><div class="step-n">1</div><div class="step-c"><div class="step-t">Вхід → одразу SL та TP</div><div class="step-d">Ніколи не входимо без виставленого стоп-лосу.</div></div></div>
+    <div class="step-item"><div class="step-n">2</div><div class="step-c"><div class="step-t">+1R → SL в беззбиток</div><div class="step-d">Переносимо SL на рівень входу — тепер без ризику.</div></div></div>
+    <div class="step-item"><div class="step-n">3</div><div class="step-c"><div class="step-t">TP1 → знімаємо 50%</div><div class="step-d">Фіксуємо прибуток, залишаємо половину для TP2.</div></div></div>
+    <div class="step-item"><div class="step-n">4</div><div class="step-c"><div class="step-t">TP2 або CHoCH → виходимо</div><div class="step-d">Закриваємо все. CHoCH проти нас = вихід негайно.</div></div></div>
+  </div>`+`<div class="rule-list">
+    <div class="rule-item"><span class="ri">🔴</span>Ніколи не переноси SL далі</div>
+    <div class="rule-item"><span class="ri">🔴</span>48 год без руху → виходь</div>
+    <div class="rule-item"><span class="ri">🟡</span>3 збиткові поспіль → пауза 24 год</div>
+  </div>`],
+  ['Журнал',`<table class="data-table"><thead><tr><th>Поле</th><th>Приклад</th></tr></thead><tbody>
+    <tr><td>Дата / Час</td><td>10.04.26 19:45</td></tr>
+    <tr><td>Пара / ТФ</td><td>BTC/USDT 4H</td></tr>
+    <tr><td>HTF Narrative</td><td class="g">Бичачий, BOS ↑ на Daily</td></tr>
+    <tr><td>Killzone</td><td class="p">NY Killzone ✓</td></tr>
+    <tr><td>AMD фаза</td><td class="p">Після Manipulation</td></tr>
+    <tr><td>Зона входу</td><td class="b">OB + FVG $82,500</td></tr>
+    <tr><td>Модель</td><td>MSS на 15M</td></tr>
+    <tr><td>Оцінка</td><td class="g">7/8 балів</td></tr>
+    <tr><td>Результат</td><td class="g">+$4.2 (+2.1R)</td></tr>
+    <tr><td>Що покращити</td><td>Взяв TP1 зарано</td></tr>
+  </tbody></table>`],
+],
+
+psychology:[
+  ['Емоції та FOMO',H('Модуль 07','Психологія<br><span>трейдера</span>','90% трейдерів знають стратегію але не можуть її дотримуватись. Психологія — це і є те що відрізняє переможців.')+
+  IB('orange','😱 FOMO','Ціна пішла без тебе. Ти "знаєш" що вона продовжить. Заходиш на емоціях. Ціна розвертається. Найпоширеніша причина збитків.')+
+  IB('red','😤 Revenge Trading','Після збитку хочеш "відіграти". Відкриваєш велику позицію без сетапу. Спіраль до повного зливу.')+
+  IB('blue','😰 Overmanaging','Закриваєш до TP через страх. Переносиш SL. Кожне ручне втручання після входу = порушення плану.')],
+  ['Дисципліна та рутина',`<div class="rule-list">
+    <div class="rule-item"><span class="ri">✅</span>Торгуй тільки по системі. Немає сетапу = немає угоди</div>
+    <div class="rule-item"><span class="ri">✅</span>Плануй ДО ринку. Під час торгів не змінюй план</div>
+    <div class="rule-item"><span class="ri">✅</span>Прийми збитки як витрати на ведення бізнесу</div>
+    <div class="rule-item"><span class="ri">✅</span>3 збиткових поспіль → зупинись 24 год</div>
+    <div class="rule-item"><span class="ri">❌</span>Ніколи не торгуй коли злий або втомлений</div>
+  </div>`+
+  `<table class="data-table"><thead><tr><th>Час</th><th>Вечірній протокол</th></tr></thead><tbody>
+    <tr><td class="p">18:00–18:30</td><td>Weekly + Daily: HTF Narrative, незакриті зони</td></tr>
+    <tr><td class="p">18:30–19:15</td><td>4H: BOS, OB/FVG зона, ліквідність</td></tr>
+    <tr><td class="p">19:15–19:45</td><td>1H/15M: сигнал? Killzone активна? Виставляємо ордер</td></tr>
+    <tr><td class="p">19:45–20:00</td><td>Журнал: аналіз та результати дня</td></tr>
+  </tbody></table>`],
+  ['Прогрес',`<table class="data-table"><thead><tr><th>Місяць</th><th>Фокус</th><th>Мета</th></tr></thead><tbody>
+    <tr><td>1–2</td><td>Фундамент + Структура</td><td>Тільки аналіз</td></tr>
+    <tr><td>3–4</td><td>OB, FVG, Ліквідність</td><td>Демо-угоди</td></tr>
+    <tr><td>5–6</td><td>Killzones + AMD</td><td>Мікро-реал</td></tr>
+    <tr><td>7–12</td><td>Narrative + MTF</td><td class="g">+5–15%/міс</td></tr>
+  </tbody></table>`+`<div class="highlight"><div class="hl-t">Мантра трейдера</div><div class="hl-d">"Я не контролюю куди піде ціна. Я контролюю тільки свої рішення: коли входити, куди ставити SL і коли виходити. Все інше — не моя відповідальність."</div></div>`],
+],
+};
+
+// ═══════════ QUIZ ═══════════
+function qA(btn,ok){
+  btn.parentElement.querySelectorAll('.quiz-opt').forEach(b=>b.disabled=true);
+  btn.classList.add(ok?'correct':'wrong');
+}
+
+// ═══════════ GLOSSARY ═══════════
+const GLOSS=[
+  {t:'BOS',tag:'Структура',tc:'#a78bfa',d:'Break of Structure — ціна оновила попередній значимий хай у висхідному тренді. Підтвердження продовження тренду.'},
+  {t:'CHoCH',tag:'Структура',tc:'#fb923c',d:'Change of Character — ціна вперше порушила значимий лой у висхідному тренді. Перший сигнал можливого розвороту.'},
+  {t:'Order Block (OB)',tag:'Зони',tc:'#5b9fff',d:'Остання протилежна свічка перед сильним імпульсом. Зона де інституційні трейдери накопичували позиції.'},
+  {t:'Fair Value Gap (FVG)',tag:'Зони',tc:'#8b5cf6',d:'Порожнеча між трьома свічками де не відбувалось торгів. Ринок прагне заповнити цю зону.'},
+  {t:'BSL',tag:'Ліквідність',tc:'#fbbf24',d:'Buy-side Liquidity — ліквідність вище хаїв. Стоп-лоси шортистів та Buy Stop ордери.'},
+  {t:'SSL',tag:'Ліквідність',tc:'#fbbf24',d:'Sell-side Liquidity — ліквідність нижче лоїв. Стоп-лоси лонгістів та Sell Stop ордери.'},
+  {t:'Liquidity Sweep',tag:'Ліквідність',tc:'#fbbf24',d:'Ціна пробиває рівень ліквідності, збирає стоп-лоси та швидко повертається. Маніпуляція завершена.'},
+  {t:'EQH / EQL',tag:'Ліквідність',tc:'#fbbf24',d:'Equal Highs / Equal Lows — два або більше хаї/лої на однаковому рівні. Скупчення ліквідності.'},
+  {t:'Premium',tag:'Ціна',tc:'#ef5350',d:'Зона вище 50% від останнього імпульсу. В Premium шукаємо шорти або виходимо з лонгів.'},
+  {t:'Discount',tag:'Ціна',tc:'#8b5cf6',d:'Зона нижче 50% від останнього імпульсу. В Discount шукаємо лонги — купуємо дешево.'},
+  {t:'Killzone',tag:'Час',tc:'#fb923c',d:'Торгові вікна з найвищим обсягом та найкращими сетапами: London (10:00–13:00) та NY (16:00–19:00) UTC+2.'},
+  {t:'AMD Model',tag:'Просунутий',tc:'#a78bfa',d:'Accumulation → Manipulation → Distribution. Три фази ринкового циклу які описують алгоритм доставки ціни.'},
+  {t:'Power of 3 (PO3)',tag:'Просунутий',tc:'#a78bfa',d:'Три частини торгового дня: Consolidation (Азія), Manipulation (London sweep), Distribution (основний рух).'},
+  {t:'Market Narrative',tag:'Просунутий',tc:'#a78bfa',d:'"Історія" що розповідає ціна. Розуміння куди спрямований Order Flow та що намагаються зробити великі гравці.'},
+  {t:'Order Flow',tag:'Просунутий',tc:'#a78bfa',d:'Загальний напрямок "великих грошей". Визначається через HTF структуру — серія BOS вгору = бичачий Order Flow.'},
+  {t:'HTF / LTF',tag:'Аналіз',tc:'#5b9fff',d:'Higher/Lower Time Frame. HTF = Weekly/Daily (контекст). LTF = 1H/15M (точний вхід).'},
+  {t:'Confluence',tag:'Вхід',tc:'#8b5cf6',d:'Збіг кількох факторів в одній зоні (OB + FVG + Discount + Killzone). Чим більше — тим вища якість сетапу.'},
+  {t:'MSS',tag:'Вхід',tc:'#8b5cf6',d:'Market Structure Shift — мінімальний розворот структури на LTF після sweep. Сигнал для входу.'},
+  {t:'Limit Order',tag:'Механіка',tc:'#5b9fff',d:'Ордер що виконується тільки при досягненні вказаної ціни. Основний інструмент SMC трейдера для входів.'},
+  {t:'Market Order',tag:'Механіка',tc:'#5b9fff',d:'Ордер що виконується негайно за поточною ціною. Гарантує виконання але не ціну.'},
+  {t:'Спред (Spread)',tag:'Механіка',tc:'#5b9fff',d:'Різниця між ціною купівлі (Bid) і продажу (Ask). Витрата при кожній угоді. На BTC/USDT мінімальна.'},
+  {t:'Drawdown',tag:'Ризик',tc:'#ef5350',d:'Максимальне просідання рахунку від піку до дна. При ризику 1% навіть 10 збитків поспіль = −9.6%.'},
+  {t:'Risk/Reward (RR)',tag:'Ризик',tc:'#ef5350',d:'Співвідношення ризику до прибутку. Мінімальний RR для входу = 1:3. При 30% win rate з RR 1:3 — в плюсі.'},
+  {t:'FOMO',tag:'Психологія',tc:'#fb923c',d:'Fear Of Missing Out — страх пропустити рух. Один з головних ворогів дисципліни. Змушує входити без сетапу.'},
+];
+
+function renderGloss(){
+  document.getElementById('glossList').innerHTML=GLOSS.map((g,i)=>`
+    <div class="gi" onclick="toggleG(${i})">
+      <div class="gi-top">
+        <div class="gi-term">${g.t}</div>
+        <div class="gi-right">
+          <div class="gi-tag" style="background:rgba(255,255,255,.05);color:${g.tc}">${g.tag}</div>
+          <div class="gi-chev" id="gc${i}">▾</div>
+        </div>
+      </div>
+      <div class="gi-def" id="gd${i}">${g.d}</div>
+    </div>`).join('');
+}
+function toggleG(i){
+  document.getElementById('gd'+i).classList.toggle('open');
+  document.getElementById('gc'+i).classList.toggle('open');
+}
+
+// ═══════════ FULL CHART ═══════════
+const FC={pair:'BTC/USDT',tf:'4h',candles:[],annots:{},layers:{ob:true,fvg:true,liq:true,bos:true},cw:12,cgap:3,offsetX:0,dragging:false,dragSX:0,dragO:0,mx:-1,my:-1};
+const PBAS={'BTC/USDT':83000,'ETH/USDT':3200,'SOL/USDT':145,'BNB/USDT':560,'ARB/USDT':1.12,'AVAX/USDT':38};
+const TFPTS={'15m':120,'1h':100,'4h':80,'1d':60,'1w':40};
+function rng(s){let x=Math.sin(s)*99999;return x-Math.floor(x);}
+function genC(pair,tf){
+  const base=PBAS[pair],n=TFPTS[tf],seed=pair.charCodeAt(0)+tf.charCodeAt(0);
+  let price=base*(0.88+(seed%10)*0.012),bias=0.52;
+  const out=[];
+  const MS={'15m':9e5,'1h':36e5,'4h':144e5,'1d':864e5,'1w':6048e5};
+  for(let i=0;i<n;i++){
+    const r1=rng(seed*i+1),r2=rng(seed*i+2),r3=rng(seed*i+3);
+    if(i%20===0)bias=0.38+r1*0.28;
+    const bull=r1<bias,body=price*(0.003+r2*0.018);
+    const open=price,close=bull?open+body:open-body;
+    const wu=body*(0.3+r3*1.2),wd=body*(0.2+rng(seed*i+4)*1.0);
+    out.push({o:open,h:Math.max(open,close)+wu,l:Math.min(open,close)-wd,c:close,v:500+rng(seed*i+5)*5000,t:new Date(Date.now()-(n-i)*MS[tf])});
+    price=close;
+  }
+  return out;
+}
+function genA(candles){
+  const obs=[],fvgs=[],liqs=[],boses=[],n=candles.length;
+  for(let i=2;i<n-3;i++){const c=candles[i];if(c.c<c.o){const n1=candles[i+1],n2=candles[i+2];if((n2.c-c.o)/c.o>0.015&&n1.c>n1.o&&n2.c>n2.o){obs.push({idx:i,high:c.o,low:c.c,type:'bull'});i+=2;}}}
+  for(let i=1;i<n-1;i++){const a=candles[i-1],b=candles[i],cc=candles[i+1];if(cc.l>a.h&&(cc.l-a.h)/a.h>0.004)fvgs.push({idx:i,top:cc.l,bot:a.h,type:'bull'});if(cc.h<a.l&&(a.l-cc.h)/a.l>0.004)fvgs.push({idx:i,top:a.l,bot:cc.h,type:'bear'});}
+  const tol=0.003;
+  for(let i=3;i<n-3;i++){for(let j=i+3;j<Math.min(i+15,n);j++){if(Math.abs(candles[i].h-candles[j].h)/candles[i].h<tol){liqs.push({idx1:i,idx2:j,price:Math.max(candles[i].h,candles[j].h),type:'bsl'});break;}if(Math.abs(candles[i].l-candles[j].l)/candles[i].l<tol){liqs.push({idx1:i,idx2:j,price:Math.min(candles[i].l,candles[j].l),type:'ssl'});break;}}}
+  for(let i=5;i<n-2;i++){let sh=0,sl=Infinity;for(let k=i-4;k<i;k++){sh=Math.max(sh,candles[k].h);sl=Math.min(sl,candles[k].l);}if(candles[i].h>sh&&candles[i].c>sh){boses.push({idx:i,price:sh,type:'bull'});i+=3;}else if(candles[i].l<sl&&candles[i].c<sl){boses.push({idx:i,price:sl,type:'bear'});i+=3;}}
+  return{obs:obs.slice(0,5),fvgs:fvgs.slice(0,5),liqs:liqs.slice(0,7),boses:boses.slice(0,7)};
+}
+
+let fcCnv,fcCtx2,fcDPR=window.devicePixelRatio||1;
+function initFC(){
+  fcCnv=document.getElementById('fcCanvas');fcCtx2=fcCnv.getContext('2d');
+  fcResz();fcLoad();
+}
+function fcResz(){
+  const w2=document.getElementById('fcWrapInner');
+  fcCnv.width=w2.clientWidth*fcDPR;fcCnv.height=w2.clientHeight*fcDPR;
+  fcCnv.style.width=w2.clientWidth+'px';fcCnv.style.height=w2.clientHeight+'px';
+  fcCtx2.scale(fcDPR,fcDPR);
+}
+function fcLoad(){
+  FC.candles=genC(FC.pair,FC.tf);FC.annots=genA(FC.candles);
+  const step=FC.cw+FC.cgap,vis=Math.floor((fcCnv.width/fcDPR-64)/step);
+  FC.offsetX=Math.max(0,(FC.candles.length-vis+2)*step);
+  fcRender();fcPriceUpd();
+}
+function fcFmt(p){return p>=1000?p.toFixed(1):p>=10?p.toFixed(2):p.toFixed(4);}
+function fcRender(){
+  if(!fcCnv||!fcCtx2)return;
+  const ctx=fcCtx2,W=fcCnv.width/fcDPR,H=fcCnv.height/fcDPR;
+  const PW=64,VH=38,PT=10,PB=VH+4,cH=H-PT-PB,cW=W-PW;
+  ctx.fillStyle='#131722';ctx.fillRect(0,0,W,H);
+  const candles=FC.candles;if(!candles.length)return;
+  const step=FC.cw+FC.cgap;
+  const fi=Math.max(0,Math.floor(FC.offsetX/step)),li=Math.min(candles.length-1,fi+Math.ceil(cW/step)+2);
+  let mn=Infinity,mx2=-Infinity;
+  for(let i=fi;i<=li;i++){mn=Math.min(mn,candles[i].l);mx2=Math.max(mx2,candles[i].h);}
+  const pr=mx2-mn||1,pp=pr*0.06,pmin=mn-pp,pmax=mx2+pp;
+  const toY=p=>PT+(1-(p-pmin)/(pmax-pmin))*cH;
+  // TradingView-style grid
+  ctx.strokeStyle='#1e222d';ctx.lineWidth=1;
+  for(let i=0;i<=6;i++){const y=PT+(i/6)*cH;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(cW,y);ctx.stroke();const price=pmax-(i/6)*(pmax-pmin);ctx.fillStyle='#363a45';ctx.font=`9px 'JetBrains Mono'`;ctx.textAlign='right';ctx.fillText(fcFmt(price),W-2,y+3);}
+  for(let x=0;x<cW;x+=80){ctx.beginPath();ctx.moveTo(x,PT);ctx.lineTo(x,PT+cH);ctx.stroke();}
+  // annotations
+  if(FC.layers.fvg)FC.annots.fvgs?.forEach(f=>{
+    if(f.idx<fi||f.idx>li)return;
+    const x1=f.idx*step-FC.offsetX,col=f.type==='bull'?'#8b5cf6':'#ef5350';
+    ctx.fillStyle=col;ctx.globalAlpha=.07;ctx.fillRect(x1,toY(f.top),cW-x1,toY(f.bot)-toY(f.top));ctx.globalAlpha=1;
+    ctx.strokeStyle=col;ctx.lineWidth=.5;ctx.setLineDash([3,4]);
+    ctx.beginPath();ctx.moveTo(x1,toY(f.top));ctx.lineTo(cW,toY(f.top));ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x1,toY(f.bot));ctx.lineTo(cW,toY(f.bot));ctx.stroke();
+    ctx.setLineDash([]);ctx.fillStyle=col;ctx.font=`8px 'JetBrains Mono'`;ctx.textAlign='left';ctx.globalAlpha=.8;
+    ctx.fillText('FVG',x1+3,toY(f.top)-3);ctx.globalAlpha=1;
+  });
+  if(FC.layers.ob)FC.annots.obs?.forEach(ob=>{
+    if(ob.idx<fi-1||ob.idx>li)return;
+    const x1=ob.idx*step-FC.offsetX,col=ob.type==='bull'?'#5b9fff':'#ef5350';
+    ctx.fillStyle=col;ctx.globalAlpha=.09;ctx.fillRect(x1,toY(ob.high),cW-x1,toY(ob.low)-toY(ob.high));ctx.globalAlpha=1;
+    ctx.strokeStyle=col;ctx.lineWidth=1;ctx.strokeRect(x1,toY(ob.high),cW-x1,toY(ob.low)-toY(ob.high));
+    ctx.fillStyle=col;ctx.font=`bold 8px 'JetBrains Mono'`;ctx.textAlign='left';
+    ctx.fillText(ob.type==='bull'?'OB↑':'OB↓',x1+3,toY(ob.high)-3);
+  });
+  if(FC.layers.liq)FC.annots.liqs?.forEach(lq=>{
+    if(lq.idx2<fi||lq.idx1>li)return;
+    const x1=lq.idx1*step-FC.offsetX,x2=lq.idx2*step+FC.cw-FC.offsetX,y=toY(lq.price);
+    ctx.strokeStyle='#fbbf24';ctx.lineWidth=1;ctx.setLineDash([5,3]);ctx.globalAlpha=.65;
+    ctx.beginPath();ctx.moveTo(Math.max(0,x1),y);ctx.lineTo(Math.min(cW,x2+40),y);ctx.stroke();
+    ctx.setLineDash([]);ctx.globalAlpha=1;ctx.fillStyle='#fbbf24';ctx.font=`8px 'JetBrains Mono'`;ctx.textAlign='left';
+    ctx.fillText(lq.type==='bsl'?'BSL':'SSL',Math.max(4,Math.min(x1,cW-36)),y-3);
+  });
+  if(FC.layers.bos)FC.annots.boses?.forEach(b=>{
+    if(b.idx<fi||b.idx>li)return;
+    const x=b.idx*step-FC.offsetX+FC.cw/2,y=toY(b.price);
+    const col=b.type==='bull'?'#8b5cf6':'#ef5350';
+    ctx.fillStyle=col;ctx.globalAlpha=.8;ctx.font=`bold 8px 'JetBrains Mono'`;ctx.textAlign='center';
+    ctx.fillText('BOS',x,b.type==='bull'?y-5:y+13);ctx.globalAlpha=1;
+  });
+  // Candles — TradingView style
+  for(let i=fi;i<=li;i++){
+    const c=candles[i],x=i*step-FC.offsetX,bull=c.c>=c.o;
+    const col=bull?'#26a69a':'#ef5350';
+    ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x+FC.cw/2,toY(c.h));ctx.lineTo(x+FC.cw/2,toY(c.l));ctx.stroke();
+    const top=toY(Math.max(c.o,c.c)),bh=Math.max(1,Math.abs(toY(c.o)-toY(c.c)));
+    if(bull){ctx.fillRect(x+.5,top,FC.cw-1,bh);}
+    else{ctx.strokeRect(x+.5,top,FC.cw-1,bh);ctx.fillStyle='rgba(239,83,80,.3)';ctx.fillRect(x+.5,top,FC.cw-1,bh);ctx.fillStyle=col;}
+  }
+  // Volume bars
+  let mv=0;for(let i=fi;i<=li;i++)mv=Math.max(mv,candles[i].v);
+  for(let i=fi;i<=li;i++){
+    const c=candles[i],x=i*step-FC.offsetX,vh=(c.v/mv)*(VH-4);
+    ctx.fillStyle=c.c>=c.o?'rgba(38,166,154,.2)':'rgba(239,83,80,.2)';
+    ctx.fillRect(x,H-PB+4+(VH-4-vh),FC.cw,vh);
+  }
+  // Crosshair
+  if(FC.mx>=0&&FC.mx<cW){
+    ctx.strokeStyle='rgba(255,255,255,.1)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+    ctx.beginPath();ctx.moveTo(FC.mx,PT);ctx.lineTo(FC.mx,PT+cH);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,FC.my);ctx.lineTo(cW,FC.my);ctx.stroke();
+    ctx.setLineDash([]);
+    const cp=pmin+(1-(FC.my-PT)/cH)*(pmax-pmin);
+    ctx.fillStyle='#2a2e39';ctx.fillRect(cW+1,FC.my-8,PW-2,16);
+    ctx.fillStyle='#8b5cf6';ctx.font=`bold 9px 'JetBrains Mono'`;ctx.textAlign='right';
+    ctx.fillText(fcFmt(cp),W-2,FC.my+3);
+  }
+  // Current price
+  const lc=candles[candles.length-1],cy=toY(lc.c);
+  ctx.strokeStyle=lc.c>=lc.o?'rgba(38,166,154,.4)':'rgba(239,83,80,.4)';
+  ctx.lineWidth=1;ctx.setLineDash([2,4]);
+  ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(cW,cy);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle=lc.c>=lc.o?'#26a69a':'#ef5350';ctx.fillRect(cW+1,cy-8,PW-2,16);
+  ctx.fillStyle='#131722';ctx.font=`bold 9px 'JetBrains Mono'`;ctx.textAlign='right';
+  ctx.fillText(fcFmt(lc.c),W-2,cy+3);
+  // Time axis
+  ctx.fillStyle='#363a45';ctx.font=`8px 'JetBrains Mono'`;ctx.textAlign='center';
+  const ts=Math.max(1,Math.round(70/step));
+  for(let i=fi;i<=li;i+=ts){
+    const x=i*step-FC.offsetX+FC.cw/2;if(x<0||x>cW)continue;
+    const d=candles[i].t,tf=FC.tf;
+    ctx.fillText((tf==='1d'||tf==='1w')?`${d.getMonth()+1}/${d.getDate()}`:`${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`,x,H-PB+16);
+  }
+}
+function fcPriceUpd(){
+  if(!FC.candles.length)return;
+  const l=FC.candles[FC.candles.length-1],p=FC.candles[FC.candles.length-2]||l;
+  const chg=((l.c-p.c)/p.c*100).toFixed(2);
+  document.getElementById('fcPTag').textContent=`${FC.pair} ${fcFmt(l.c)} ${chg>0?'+':''}${chg}%`;
+}
+function fcPair(pair,btn){FC.pair=pair;document.querySelectorAll('.fc-btn').forEach(b=>{if(['BTC','ETH','SOL','BNB','ARB','AVAX'].includes(b.textContent))b.classList.remove('active');});btn.classList.add('active');fcLoad();}
+function fcTF(tf,btn){FC.tf=tf;document.querySelectorAll('.fc-btn').forEach(b=>{if(['15m','1H','4H','1D','1W'].includes(b.textContent))b.classList.remove('active');});btn.classList.add('active');fcLoad();}
+function fcLayer(n,btn){FC.layers[n]=!FC.layers[n];btn.classList.toggle('active',FC.layers[n]);if(cur==='chart')fcRender();}
+function fcZoom(f){FC.cw=Math.max(3,Math.min(36,FC.cw*f));if(cur==='chart')fcRender();}
+function fcReset(){FC.cw=12;FC.cgap=3;const step=FC.cw+FC.cgap,vis=Math.floor((fcCnv.width/fcDPR-64)/step);FC.offsetX=Math.max(0,(FC.candles.length-vis+2)*step);fcRender();}
+
+// Touch + mouse chart events
+document.addEventListener('DOMContentLoaded',()=>{
+  const cw2=document.getElementById('fcWrapInner');if(!cw2)return;
+  cw2.addEventListener('mousedown',e=>{FC.dragging=true;FC.dragSX=e.clientX;FC.dragO=FC.offsetX;cw2.style.cursor='grabbing';});
+  window.addEventListener('mousemove',e=>{
+    if(!fcCnv)return;
+    const r=cw2.getBoundingClientRect();FC.mx=e.clientX-r.left;FC.my=e.clientY-r.top;
+    if(FC.dragging){FC.offsetX=Math.max(0,FC.dragO-(e.clientX-FC.dragSX));FC.offsetX=Math.min(FC.offsetX,Math.max(0,(FC.candles.length-2)*(FC.cw+FC.cgap)));}
+    const idx=Math.floor((FC.mx+FC.offsetX)/(FC.cw+FC.cgap));
+    if(idx>=0&&idx<FC.candles.length){
+      const c=FC.candles[idx];
+      document.getElementById('tto').textContent=fcFmt(c.o);document.getElementById('tth').textContent=fcFmt(c.h);
+      document.getElementById('ttl').textContent=fcFmt(c.l);document.getElementById('ttc').textContent=fcFmt(c.c);
+      document.getElementById('ttc').style.color=c.c>=c.o?'#26a69a':'#ef5350';
+      document.getElementById('ttv').textContent=c.v.toFixed(0);
+      const tt=document.getElementById('fcTT');
+      tt.style.display='block';tt.style.left=Math.min(FC.mx+12,cw2.clientWidth-145)+'px';tt.style.top=Math.max(8,FC.my-80)+'px';
+      document.getElementById('fcStat').textContent=`O:${fcFmt(c.o)} H:${fcFmt(c.h)} L:${fcFmt(c.l)} C:${fcFmt(c.c)}`;
+    }
+    if(cur==='chart')fcRender();
+  });
+  window.addEventListener('mouseup',()=>{FC.dragging=false;if(cw2)cw2.style.cursor='crosshair';});
+  cw2.addEventListener('mouseleave',()=>{FC.mx=-1;FC.my=-1;document.getElementById('fcTT').style.display='none';if(cur==='chart')fcRender();});
+  cw2.addEventListener('wheel',e=>{e.preventDefault();const before=FC.cw;FC.cw=Math.max(3,Math.min(36,FC.cw*(e.deltaY<0?1.15:.87)));FC.offsetX=Math.max(0,FC.mx*(FC.cw/before-1)+FC.offsetX*(FC.cw/before));if(cur==='chart')fcRender();},{passive:false});
+  let tx=0,to=0,tp2=0;
+  cw2.addEventListener('touchstart',e=>{if(e.touches.length===1){tx=e.touches[0].clientX;to=FC.offsetX;}else if(e.touches.length===2){tp2=Math.abs(e.touches[0].clientX-e.touches[1].clientX);}},{passive:true});
+  cw2.addEventListener('touchmove',e=>{if(e.touches.length===1){FC.offsetX=Math.max(0,to-(e.touches[0].clientX-tx));if(cur==='chart')fcRender();}else if(e.touches.length===2){const np=Math.abs(e.touches[0].clientX-e.touches[1].clientX);FC.cw=Math.max(3,Math.min(36,FC.cw*(np/tp2)));tp2=np;if(cur==='chart')fcRender();}},{passive:true});
+});
+window.addEventListener('resize',()=>{if(cur==='chart'&&fcCnv){fcCtx2.setTransform(1,0,0,1,0,0);fcResz();fcRender();}});
+</script>
+</body>
+</html>
